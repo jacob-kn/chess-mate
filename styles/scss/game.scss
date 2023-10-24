@@ -1,0 +1,381 @@
+/* Course: SENG 513 */
+/* Date: OCT 23, 2023 */
+/* Assignment 2 */
+/* Name: Jacob Nguyen */
+/* UCID: 30087465 */
+
+@use "base";
+
+// LOGO
+.logo {
+    a {
+        all: unset;
+        cursor: pointer;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        font-size: 3rem;
+        letter-spacing: -0.13em;
+        padding-right: 0.13em;
+        line-height: 0.8em;
+        margin: 1rem;
+        user-select: none;
+    }
+}
+
+// LAYOUT
+.game-layout {
+    display: grid;
+
+    grid-template-rows: 80px 1fr 80px 70px;
+    grid-template-columns: 2fr 1fr;
+    grid-template-areas:
+        "top-player     top-clock"
+        "board          board"
+        "bottom-player  bottom-clock"
+        "controls       controls";
+
+    gap: 8px;
+
+    margin: auto;
+
+    @include base.md {
+        width: min(80vw, 800px);
+
+        grid-template-rows: 50px 1fr min-content 1fr 50px;
+        grid-template-areas:
+            "top-player     ."
+            "board          top-clock"
+            "board          controls"
+            "board          bottom-clock"
+            "bottom-player  .";
+    }
+}
+
+// PLAYERS
+.player {
+    align-self: center;
+    padding-left: 1em;
+    user-select: none;
+    line-height: 1.5;
+
+    .score {
+        font-weight: bold;
+        display: inline-block;
+        margin-right: 0.5em;
+        border-radius: 0.2em;
+        padding: 0.1em 0.5em;
+        margin-right: 0.25em;
+        background-color: base.$surface-color;
+    }
+
+    > i {
+        line-height: 1.5;
+        font-size: 1.3em;
+        border-radius: 0.2em;
+        padding: 0 0.5em;
+        margin-right: 0.25em;
+        margin-bottom: 0.25em;
+    }
+
+    .material {
+        margin-left: 0.25em;
+        padding-left: 0.25em;
+        border-left: solid;
+        border-radius: 0.25em;
+        display: inline-block;
+
+        span {
+            padding-right: 0.25em;
+            i {
+                width: 0.1em;
+            }
+        }
+
+        .material-difference {
+            font-size: 0.75em;
+            vertical-align: super;
+        }
+    }
+
+    &[data-player-color="white"] {
+        > i {
+            background-color: base.$black;
+        }
+
+        .material {
+            background-color: base.$white;
+            color: base.$black;
+        }
+    }
+    &[data-player-color="black"] {
+        > i {
+            background-color: base.$white;
+            color: base.$black;
+        }
+    }
+
+    .name {
+        display: none;
+    }
+
+    @include base.sm {
+        .name {
+            display: inline-block;
+        }
+    }
+}
+
+#top-player {
+    grid-area: top-player;
+    align-self: end;
+}
+
+#bottom-player {
+    grid-area: bottom-player;
+    align-self: start;
+}
+
+// CONTROLS
+#game-controls {
+    grid-area: controls;
+    place-self: start center;
+    display: flex;
+    flex-wrap: wrap-reverse;
+    flex-direction: row-reverse;
+
+    button {
+        flex-grow: 1;
+    }
+}
+
+// CLOCKS
+.clock {
+    justify-self: end;
+    font-weight: bold;
+    border-radius: 0.5rem;
+    padding: 0 1em;
+    line-height: 2em;
+    white-space: nowrap;
+
+    i {
+        padding-right: 0.25em;
+    }
+
+    .fa-fade {
+        --fa-animation-duration: 3s;
+    }
+
+    &[data-clock-color="white"] {
+        background-color: base.$white;
+        color: base.$black;
+    }
+
+    &[data-clock-color="black"] {
+        background-color: base.$black;
+    }
+
+    &[data-clock-turn="false"] {
+        opacity: 0.3;
+    }
+
+    @include base.md {
+        justify-self: stretch;
+        padding: 0 auto;
+        text-align: center;
+        font-size: 2rem;
+    }
+}
+
+#top-clock {
+    grid-area: top-clock;
+    align-self: end;
+}
+
+#bottom-clock {
+    grid-area: bottom-clock;
+    align-self: start;
+}
+
+// BOARD
+.board-container {
+    grid-area: board;
+    position: relative;
+}
+
+#board {
+    background-image: url("../../assets/board.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 0.5rem;
+    position: relative;
+    width: min(500px, 100vw);
+    height: min(500px, 100vw);
+    user-select: none;
+    box-sizing: border-box;
+}
+
+// COORDINATES
+#coordinates {
+    position: absolute;
+    display: flex;
+    user-select: none;
+    font-weight: bold;
+    font-size: 0.6rem;
+    top: 2px;
+    left: 2px;
+    height: 100%;
+    width: 100%;
+
+    span {
+        flex: 1 1 auto;
+        &:nth-child(2n + 1) {
+            color: base.$secondary-color;
+        }
+
+        &:nth-child(2n) {
+            color: base.$primary-color;
+        }
+    }
+
+    .ranks {
+        display: inherit;
+        flex-flow: column-reverse;
+        height: 100%;
+    }
+
+    .files {
+        display: inherit;
+        position: absolute;
+        bottom: 2px;
+        right: 4px;
+        flex-flow: row;
+        width: 100%;
+        text-align: right;
+    }
+
+    &.flipped {
+        .ranks {
+            flex-flow: column;
+        }
+
+        .files {
+            flex-flow: row-reverse;
+        }
+
+        span {
+            &:nth-child(2n + 1) {
+                color: base.$primary-color;
+            }
+
+            &:nth-child(2n) {
+                color: base.$secondary-color;
+            }
+        }
+    }
+}
+
+// PIECES
+.piece {
+    z-index: 2;
+    will-change: transform;
+    cursor: grab;
+}
+
+$pieces: king, queen, rook, bishop, knight, pawn;
+$color-suffices: w-, b-;
+@each $piece in $pieces {
+    @each $color-suffix in $color-suffices {
+        .#{$color-suffix}#{$piece} {
+            background-image: url(../../assets/chess-pieces/#{$color-suffix}#{$piece}.svg);
+        }
+    }
+}
+
+// POSITIONS
+
+// square properties to be extended by position classes
+%square {
+    background-size: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 12.5%;
+    height: 12.5%;
+    box-sizing: inherit;
+}
+
+// With white at the bottom, a8 will be at the top left (0,0) and h1-bottom right (700%,700%)
+$files: a, b, c, d, e, f, g, h;
+$file-position: 0%;
+@each $file in $files {
+    @for $rank from 1 through 8 {
+        $rank-position: calc(800% - ($rank * 100%));
+
+        .#{$file}#{$rank} {
+            @extend %square;
+            transform: translateX($file-position) translateY($rank-position);
+        }
+
+        // flipped
+        $flipped-file-position: calc(700% - $file-position);
+        $flipped-rank-position: calc(700% - $rank-position);
+        .flipped.#{$file}#{$rank} {
+            transform: translateX($flipped-file-position)
+                translateY($flipped-rank-position);
+        }
+    }
+    $file-position: $file-position + 100%;
+}
+
+.highlight {
+    background-color: rgba(base.$on-primary, 0.25);
+}
+
+.movable {
+    cursor: pointer;
+    z-index: 1;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        height: 100%;
+        width: 100%;
+        box-sizing: border-box;
+        background-color: rgba(base.$surface-color, 0.3);
+        border-radius: 50%;
+        background-clip: content-box;
+        padding: 35%;
+        transition: padding 0.1s ease-out;
+    }
+
+    &:hover::before {
+        padding: 25%;
+    }
+}
+
+.capturable {
+    cursor: grab;
+    z-index: 3;
+
+    &::before {
+        content: "";
+        z-index: 0;
+        position: absolute;
+        inset: 0;
+        height: 100%;
+        width: 100%;
+        box-sizing: border-box;
+        border: 4px solid rgba(base.$surface-color, 0.3);
+        border-radius: 50%;
+        transition: padding 0.1s ease-in;
+    }
+
+    &:hover::before {
+        background-color: rgba(base.$surface-color, 0.3);
+        border-color: transparent;
+        background-clip: content-box;
+        padding: 10%;
+    }
+}

@@ -1,0 +1,233 @@
+/* Course: SENG 513 */
+/* Date: OCT 23, 2023 */
+/* Assignment 2 */
+/* Name: Jacob Nguyen */
+/* UCID: 30087465 */
+/* Course: SENG 513 */
+/* Date: OCT 23, 2023 */
+/* Assignment 2 */
+/* Name: Jacob Nguyen */
+/* UCID: 30087465 */
+#game-selection label span, .color-selection label span, button {
+  border: none;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  transition: all 0.15s ease-in-out;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+@media (hover: hover) {
+  #game-selection label span:hover, .color-selection label span:hover, button:hover {
+    transform: scale(1.03);
+  }
+}
+
+body {
+  font: 100% "Inter", sans-serif;
+  color: #e0d0c1;
+  background-color: #0e1a15;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+footer {
+  margin-top: auto;
+  height: 0;
+  width: 100vw;
+  box-sizing: border-box;
+  padding: 0 1.5rem;
+  text-align: center;
+  border-top: 2px solid #5e503f;
+  font-size: 0.8rem;
+}
+@media (min-width: 768px) {
+  footer {
+    font-size: 1rem;
+  }
+}
+
+button {
+  background-color: #5e503f;
+  box-shadow: 0 1px 3px rgba(94, 80, 63, 0.15), 0 1px 3px rgba(94, 80, 63, 0.2);
+  color: #eff0e2;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  font: inherit;
+  margin: 0.2rem;
+}
+
+div.hidden {
+  display: none;
+}
+
+body {
+  margin: 0 0.5rem;
+}
+
+header {
+  text-align: center;
+  font-size: 2rem;
+  margin: 20vh 0 1em;
+}
+
+.logo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  font-size: 6rem;
+  letter-spacing: -0.13em;
+  line-height: 0.8em;
+  padding-right: 0.13em;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
+.color-selection, #game-selection {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+}
+.color-selection label, #game-selection label {
+  flex: 1 1 auto;
+  text-align: center;
+}
+.color-selection label input, #game-selection label input {
+  display: none;
+}
+.color-selection label span, #game-selection label span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.color-selection label input:checked + span, #game-selection label input:checked + span {
+  background-color: #c6ac8f;
+  box-shadow: 0 1px 3px rgba(198, 172, 143, 0.15), 0 1px 3px rgba(198, 172, 143, 0.2);
+  color: #2f2f2f;
+  font-weight: bold;
+}
+
+#game-selection {
+  background-color: #22333b;
+  box-shadow: 0 1px 3px rgba(34, 51, 59, 0.15), 0 1px 3px rgba(34, 51, 59, 0.2);
+  color: #e0d0c1;
+  width: min(90%, 300px);
+  margin: 4vh auto 1vh;
+}
+
+.time-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.time-controls form label {
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 1.5em auto;
+  gap: 0.5em;
+  margin: 1rem 0;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.time-controls .range,
+.time-controls input {
+  width: 100%;
+}
+
+input[type=checkbox] {
+  background-color: #0e1a15;
+  box-shadow: 0 1px 3px rgba(14, 26, 21, 0.15), 0 1px 3px rgba(14, 26, 21, 0.2);
+  color: #e0d0c1;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  cursor: pointer;
+  display: grid;
+  margin: 0;
+  font: inherit;
+  width: 1.5em;
+  height: 1.5em;
+  border: 0.25em solid;
+  border-radius: 0.15em;
+  transform: translateY(-0.2em);
+  transition: 0.15s ease-in-out;
+  place-content: center;
+}
+input[type=checkbox]::before {
+  content: "";
+  width: 0.5em;
+  height: 0.5em;
+  background-color: #c6ac8f;
+  transform: scale(0);
+  transition: 0.15s transform ease-in-out;
+}
+input[type=checkbox]:checked {
+  color: #c6ac8f;
+}
+input[type=checkbox]:checked::before {
+  transform: scale(1);
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+       appearance: none;
+  background: transparent;
+  cursor: pointer;
+  margin: 1rem 0;
+}
+input[type=range]::-webkit-slider-runnable-track, input[type=range]::-moz-range-track {
+  background-color: #22333b;
+  box-shadow: 0 1px 3px rgba(34, 51, 59, 0.15), 0 1px 3px rgba(34, 51, 59, 0.2);
+  color: #e0d0c1;
+  border-radius: 0.5rem;
+  height: 0.5rem;
+}
+input[type=range]::-webkit-slider-thumb, input[type=range]::-moz-range-thumb {
+  background-color: #c6ac8f;
+  box-shadow: 0 1px 3px rgba(198, 172, 143, 0.15), 0 1px 3px rgba(198, 172, 143, 0.2);
+  color: #e0d0c1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 1.5rem;
+  width: 1.5rem;
+  border-radius: 0.5rem;
+  margin-top: -0.5rem;
+}
+
+.color-selection {
+  background-color: #22333b;
+  box-shadow: 0 1px 3px rgba(34, 51, 59, 0.15), 0 1px 3px rgba(34, 51, 59, 0.2);
+  color: #e0d0c1;
+  margin: 1rem 0;
+}
+
+#start {
+  margin-bottom: 3rem;
+}
+
+.slide-down {
+  animation: slide-down 0.8s forwards;
+}
+
+@keyframes slide-down {
+  0% {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}/*# sourceMappingURL=landing.css.map */

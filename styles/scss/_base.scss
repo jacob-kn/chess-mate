@@ -1,0 +1,101 @@
+/* Course: SENG 513 */
+/* Date: OCT 23, 2023 */
+/* Assignment 2 */
+/* Name: Jacob Nguyen */
+/* UCID: 30087465 */
+
+// VARIABLES
+$background-color: #0e1a15;
+$surface-color: #22333b;
+$primary-color: #5e503f;
+$secondary-color: #c6ac8f;
+
+$on-background: #e0d0c1;
+$on-primary: #eff0e2;
+$on-secondary: #2f2f2f;
+
+$white: #dbdbdb;
+$black: #383e43;
+
+$screen-sm-min: 360px;
+$screen-md-min: 768px;
+
+// MIXINS
+@mixin theme($background: $surface-color, $on: $on-background) {
+    background-color: $background;
+    box-shadow: 0 1px 3px rgba($background, 0.15),
+        0 1px 3px rgba($background, 0.2);
+    color: $on;
+}
+
+// Small screens and larger
+@mixin sm {
+    @media (min-width: #{$screen-sm-min}) {
+        @content;
+    }
+}
+
+// Medium screens and larger
+@mixin md {
+    @media (min-width: #{$screen-md-min}) {
+        @content;
+    }
+}
+
+// PLACEHOLDER SELECTORS
+%button-container {
+    border: none;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    transition: all 0.15s ease-in-out;
+    user-select: none;
+
+    @media (hover: hover) {
+        &:hover {
+            transform: scale(1.03);
+        }
+    }
+}
+
+// STYLES
+body {
+    font: 100% "Inter", sans-serif;
+    color: $on-background;
+    background-color: $background-color;
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+footer {
+    margin-top: auto;
+    height: 0;
+    width: 100vw;
+    box-sizing: border-box;
+    padding: 0 1.5rem;
+    text-align: center;
+    border-top: 2px solid $primary-color;
+    font-size: 0.8rem;
+
+    @include md {
+        font-size: 1rem;
+    }
+}
+
+button {
+    @extend %button-container;
+    @include theme($primary-color, $on-primary);
+
+    appearance: none;
+    font: inherit;
+    margin: 0.2rem;
+}
+
+div.hidden {
+    display: none;
+}

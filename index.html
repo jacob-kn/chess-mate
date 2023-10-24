@@ -1,0 +1,107 @@
+<!-- Course: SENG 513 -->
+<!-- Date: OCT 23, 2023 -->
+<!-- Assignment 2 -->
+<!-- Name: Jacob Nguyen -->
+<!-- UCID: 30087465 -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="styles/css/landing.css">
+    <!-- Embed font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
+    <title>ChessMate</title>
+    <link rel="icon" type="image/svg" href="/assets/favicon.svg">
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="logo"><span>Chess</span><span>Mate</span></div>
+    </header>
+
+    <form id="game-selection" autocomplete="off">
+        <label>
+            <input type="radio" name="game-type" value="two">
+            <span class="radio-button">2 players</span>
+        </label>
+        <label>
+            <input type="radio" name="game-type" value="computer">
+            <span class="radio-button">Computer</span>
+        </label>
+    </form>
+
+    <div class="hidden" data-type-selection="two">
+        <h2>Play with a friend</h2>
+    </div>
+
+    <div class="hidden" data-type-selection="computer">
+        <h2>Play with the computer</h2>
+    </div>
+
+    <div class="time-controls hidden" data-type-selection="two-computer">
+        <form autocomplete="off">
+            <label>
+                <input type="checkbox" id="toggle-time-control">
+                Enable Time Control
+            </label>
+        </form>
+
+        <div id="time-selection" class="range hidden" data-time-toggle="toggle">
+            <label for="minutes-per-side">Minutes per side: <span>10</span></label>
+            <input type="range" id="minutes-per-side" min="1" max="30" value="10">
+        </div>
+        <div id="increment-slection" class="range hidden" data-time-toggle="toggle">
+            <label for="increment-seconds">Increment in seconds: <span>3</span></label>
+            <input type="range" id="increment-seconds" min="0" max="20" value="3">
+        </div>
+    </div>
+
+    <div id="play-as" class="hidden" data-type-selection="computer">
+        <p>Play as: <span>White</span></p>
+        <form class="color-selection" autocomplete="off">
+            <label>
+                <input type="radio" name="color-choice" value="white" checked>
+                <span class="radio-button">White</span>
+            </label>
+            <label>
+                <input type="radio" name="color-choice" value="random">
+                <span class="radio-button">Random</span>
+            </label>
+            <label>
+                <input type="radio" name="color-choice" value="black">
+                <span class="radio-button">Black</span>
+            </label>
+        </form>
+
+    </div>
+
+    <div id="start" class="hidden" data-type-selection="two-computer">
+        <form style="display: inline" action="/play.html" method="get">
+            <button type="submit">Start</button>
+        </form>
+    </div>
+
+    <footer>
+        <p>Chess pieces adapted from "king", "queen", "rook", "bishop", "knight", and "pawn" by
+            <a href=https://thenounproject.com/rizal2109>Samsul Rizal</a> via
+            <a href="https://thenounproject.com/browse/collection-icon/chess-98934">Noun Project</a> (CC BY 3.0) /
+            Outline and gradient fill added to original.
+        </p>
+        <p>Icons by
+            <a href="https://fontawesome.com">Font Awesome</a>,
+            <a href="https://fontawesome.com/license/free">License</a> -
+            (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License).
+        </p>
+    </footer>
+
+    <script src="scripts/index.js"></script>
+</body>
+
+</html>

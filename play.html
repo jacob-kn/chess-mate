@@ -1,0 +1,175 @@
+<!-- Course: SENG 513 -->
+<!-- Date: OCT 23, 2023 -->
+<!-- Assignment 2 -->
+<!-- Name: Jacob Nguyen -->
+<!-- UCID: 30087465 -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="/styles/css/game.css">
+    <!-- Embed font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
+    <!-- Fontawesome -->
+    <link href="/assets/fontawesome/css/fontawesome.css" rel="stylesheet">
+    <link href="/assets/fontawesome/css/solid.css" rel="stylesheet">
+    <title>ChessMate</title>
+    <link rel="icon" type="image/svg" href="/assets/favicon.svg">
+</head>
+
+<body>
+    <header>
+
+        <div class="logo" title="Home"><a href=/index.html><span>Chess</span><span>Mate</span></a></div>
+    </header>
+    <div class="game-layout">
+        <div class="board-container">
+            <div id="board">
+                <!-- Coordinates -->
+                <div id="coordinates">
+                    <div class="ranks">
+                        <span>1</span>
+                        <span>2</span>
+                        <span>3</span>
+                        <span>4</span>
+                        <span>5</span>
+                        <span>6</span>
+                        <span>7</span>
+                        <span>8</span>
+                    </div>
+                    <div class="files">
+                        <span>a</span>
+                        <span>b</span>
+                        <span>c</span>
+                        <span>d</span>
+                        <span>e</span>
+                        <span>f</span>
+                        <span>g</span>
+                        <span>h</span>
+                    </div>
+                </div>
+                <!-- Pieces -->
+                <!-- Black -->
+                <div class="b-rook piece a8"></div>
+                <div class="b-knight piece b8"></div>
+                <div class="b-bishop piece c8"></div>
+                <div class="b-queen piece d8"></div>
+                <div class="b-king piece e8"></div>
+                <div class="b-bishop piece f8"></div>
+                <div class="b-knight piece g8"></div>
+                <div class="b-rook piece h8"></div>
+                <div class="b-pawn piece a7"></div>
+                <div class="b-pawn piece b7"></div>
+                <div class="b-pawn piece c7"></div>
+                <div class="b-pawn piece d7"></div>
+                <div class="b-pawn piece e5"></div>
+                <div class="b-pawn piece f7"></div>
+                <div class="b-pawn piece g7"></div>
+                <div class="b-pawn piece h7"></div>
+
+                <!-- White -->
+                <div class="w-pawn piece a2"></div>
+                <div class="w-pawn piece b2"></div>
+                <div class="w-pawn piece c2"></div>
+                <div class="w-pawn piece d4"></div>
+                <div class="w-pawn piece e2"></div>
+                <div class="w-pawn piece f2"></div>
+                <div class="w-pawn piece g2"></div>
+                <div class="w-pawn piece h2"></div>
+                <div class="w-rook piece a1"></div>
+                <div class="w-knight piece b1"></div>
+                <div class="w-bishop piece c1"></div>
+                <div class="w-queen piece d1"></div>
+                <div class="w-king piece e1"></div>
+                <div class="w-bishop piece f1"></div>
+                <div class="w-knight piece g1"></div>
+                <div class="w-rook piece h1"></div>
+
+                <!-- Square effects -->
+                <div class="highlight d4"></div>
+                <div class="highlight e7"></div>
+                <div class="highlight e5"></div>
+                <div class="movable d5"></div>
+                <div class="capturable e5"></div>
+            </div>
+
+            <!-- Modals -->
+            <div id="promotion-modal"></div>
+
+            <div id="game-over-modal"></div>
+
+            <div id="resign-modal"></div>
+
+            <div id="draw-modal"></div>
+
+            <div id="new-game-modal"></div>
+        </div>
+
+        <div id="top-player" class="player" data-player-color="black">
+            <div class="score">0</div>
+            <i class="fa-solid fa-chess-pawn"></i>
+            <span class="name">Computer</span>
+            <div class="material">
+                <span class="knight-material">
+                    <i class="fa-solid fa-chess-knight fa-xs"></i>
+                </span>
+            </div>
+        </div>
+
+        <div id="bottom-player" class="player" data-player-color="white">
+            <div class="score">0</div>
+            <i class="fa-solid fa-chess-pawn"></i>
+            <span class="name">Player 2</span>
+            <div class="material">
+                <span class="bishop-material">
+                    <i class="fa-solid fa-chess-bishop fa-xs"></i>
+                </span>
+                <span class="pawn-material">
+                    <i class="fa-solid fa-chess-pawn fa-xs"></i>
+                    <i class="fa-solid fa-chess-pawn fa-xs"></i>
+                    <i class="fa-solid fa-chess-pawn fa-xs"></i>
+                </span>
+
+                <span class="material-difference">+3</span>
+            </div>
+        </div>
+
+        <div id="top-clock" class="clock" data-clock-color="black" data-clock-turn="false">
+            <i class="fa-regular fa-clock fa-xs"></i><span>5:00</span>
+        </div>
+
+        <div id="bottom-clock" class="clock" data-clock-color="white" data-clock-turn="true">
+            <i class="fa-regular fa-clock fa-xs fa-fade"></i><span>5:00</span>
+        </div>
+
+        <div id="game-controls">
+            <button id="resign" title="Resign"><i class="fa-solid fa-flag fa-fw"></i></button>
+            <button id="draw" title="Draw"><i class="fa-solid fa-handshake-angle fa-fw"></i></button>
+            <button id="new-game" title="New Game"><i class="fa-solid fa-plus fa-fw"></i></button>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>Chess pieces adapted from "king", "queen", "rook", "bishop", "knight", and "pawn" by
+            <a href=https://thenounproject.com/rizal2109>Samsul Rizal</a> via
+            <a href="https://thenounproject.com/browse/collection-icon/chess-98934">Noun Project</a> (CC BY 3.0) /
+            Outline and gradient fill added to original.
+        </p>
+        <p>Icons by
+            <a href="https://fontawesome.com">Font Awesome</a>,
+            <a href="https://fontawesome.com/license/free">License</a> -
+            (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License).
+        </p>
+    </footer>
+
+    <script src="scripts/play.js"></script>
+</body>
+
+</html>

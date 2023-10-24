@@ -1,0 +1,180 @@
+/* Course: SENG 513 */
+/* Date: OCT 23, 2023 */
+/* Assignment 2 */
+/* Name: Jacob Nguyen */
+/* UCID: 30087465 */
+
+@use "base";
+
+// BODY
+body {
+    margin: 0 0.5rem;
+}
+
+// HEADER
+header {
+    text-align: center;
+    font-size: 2rem;
+    margin: 20vh 0 1em;
+}
+
+// LOGO
+.logo {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    font-size: 6rem;
+    letter-spacing: -0.13em;
+    line-height: 0.8em;
+    padding-right: 0.13em;
+    user-select: none;
+}
+
+// RADIO CONTAINER
+%radio-container {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 0.5rem;
+    padding: 0.25rem;
+
+    label {
+        flex: 1 1 auto;
+        text-align: center;
+
+        input {
+            display: none;
+        }
+
+        span {
+            @extend %button-container;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        input:checked + span {
+            @include base.theme(base.$secondary-color, base.$on-secondary);
+            font-weight: bold;
+        }
+    }
+}
+
+// GAME SELECTION
+#game-selection {
+    @include base.theme;
+    @extend %radio-container;
+    width: min(90%, 300px);
+    margin: 4vh auto 1vh;
+}
+
+// TIME CONTROLS
+.time-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: wrap;
+
+    form label {
+        cursor: pointer;
+        display: grid;
+        grid-template-columns: 1.5em auto;
+        gap: 0.5em;
+        margin: 1rem 0;
+        user-select: none;
+    }
+
+    .range,
+    input {
+        width: 100%;
+    }
+}
+
+// CHECKBOX
+input[type="checkbox"] {
+    @include base.theme(base.$background-color);
+    appearance: none;
+    cursor: pointer;
+    display: grid;
+    margin: 0;
+    font: inherit;
+    width: 1.5em;
+    height: 1.5em;
+    border: 0.25em solid;
+    border-radius: 0.15em;
+    transform: translateY(-0.2em);
+    transition: 0.15s ease-in-out;
+
+    place-content: center;
+    &::before {
+        content: "";
+        width: 0.5em;
+        height: 0.5em;
+        background-color: base.$secondary-color;
+        transform: scale(0);
+        transition: 0.15s transform ease-in-out;
+    }
+
+    &:checked {
+        color: base.$secondary-color;
+        &::before {
+            transform: scale(1);
+        }
+    }
+}
+
+// RANGE INPUT
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    margin: 1rem 0;
+
+    &::-webkit-slider-runnable-track,
+    &::-moz-range-track {
+        @include base.theme(base.$surface-color);
+        border-radius: 0.5rem;
+        height: 0.5rem;
+    }
+
+    &::-webkit-slider-thumb,
+    &::-moz-range-thumb {
+        @include base.theme(base.$secondary-color);
+        -webkit-appearance: none;
+        appearance: none;
+
+        height: 1.5rem;
+        width: 1.5rem;
+        border-radius: 0.5rem;
+        margin-top: -0.5rem;
+    }
+}
+
+// COLOR SELECTION
+.color-selection {
+    @include base.theme;
+    @extend %radio-container;
+    margin: 1rem 0;
+}
+
+// START BUTTON
+#start {
+    margin-bottom: 3rem;
+}
+
+// ANIMATIONS
+.slide-down {
+    animation: slide-down 0.8s forwards;
+}
+
+@keyframes slide-down {
+    0% {
+        transform: translateY(-8px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" x="0px" y="0px" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <linearGradient id="gradient-2" bx:pinned="true">
+      <stop offset="0.705" style="stop-color: rgb(56, 62, 67);" />
+      <stop offset="0.715" style="stop-color: rgb(54, 57, 58);" />
+      <stop offset="1" style="stop-color: rgb(54, 57, 58);" />
+    </linearGradient>
+    <linearGradient id="gradient-3" bx:pinned="true">
+      <stop offset="0.705" style="stop-color: rgb(56, 62, 67);" />
+      <stop offset="0.718" style="stop-color: rgb(54, 57, 58);" />
+      <stop offset="1" style="stop-color: rgb(54, 57, 58);" />
+    </linearGradient>
+    <linearGradient id="color-0" gradientUnits="userSpaceOnUse"
+      gradientTransform="matrix(1, 0, 0, 0.961278, 0, 2.957968)" bx:pinned="true">
+      <stop style="stop-color: rgb(35, 35, 35)" />
+    </linearGradient>
+    <radialGradient id="gradient-2-2" gradientUnits="userSpaceOnUse" cx="24.268" cy="6.682" r="15.09"
+      gradientTransform="matrix(2.039601, 0.070442, -0.060763, 1.759342, -25.709795, -6.168043)"
+      xlink:href="#gradient-2" />
+    <radialGradient id="gradient-2-3" gradientUnits="userSpaceOnUse" cx="21.9" cy="29.61" r="13.21"
+      gradientTransform="matrix(1.972136, 0.58165, -0.716247, 2.24408, -0.55752, -44.957416)"
+      xlink:href="#gradient-2" />
+    <radialGradient id="gradient-2-4" gradientUnits="userSpaceOnUse" cx="21.387" cy="48.459" r="20.1"
+      gradientTransform="matrix(2.019742, 0.082706, -0.055383, 1.352515, -23.311758, -20.642633)"
+      xlink:href="#gradient-2" />
+  </defs>
+  <g style="filter: none;" transform="matrix(1, 0, 0, 1, 54.228188, -4.939596)" />
+  <g style="" transform="matrix(1, 0, 0, 0.976492, 0, 1.406027)">
+    <path
+      d="M 47.09 5.318 L 47.09 13.048 C 47.09 19.078 43.21 20.338 39.96 20.338 L 24.05 20.338 C 20.79 20.338 16.91 19.078 16.91 13.048 L 16.91 5.318 L 23.07 5.318 L 23.07 11.308 C 23.07 11.588 23.29 11.808 23.57 11.808 L 28.02 11.808 C 28.299 11.808 28.52 11.588 28.52 11.308 L 28.52 5.458 L 35.48 5.458 L 35.48 11.308 C 35.48 11.588 35.7 11.808 35.98 11.808 L 40.429 11.808 C 40.709 11.808 40.929 11.588 40.929 11.308 L 40.929 5.318 L 47.09 5.318 Z"
+      style="stroke: url('#color-0'); stroke-linecap: round; stroke-linejoin: round; fill: url('#gradient-2-2'); stroke-width: 2.02379px;" />
+    <path
+      d="M 45.21 47.27 C 44.88 47.212 44.54 47.155 44.19 47.116 C 44.059 47.097 43.919 47.087 43.78 47.068 C 42.519 46.924 41.15 46.857 39.59 46.857 L 24.41 46.857 C 23.09 46.857 21.931 46.905 20.83 47.001 C 20.48 47.03 20.141 47.068 19.81 47.107 C 19.459 47.155 19.12 47.203 18.789 47.26 L 21.699 21.027 C 22.019 21.104 22.349 21.152 22.689 21.181 C 23.119 21.239 23.579 21.258 24.048 21.258 L 39.958 21.258 C 40.428 21.258 40.878 21.239 41.308 21.181 C 41.649 21.152 41.979 21.104 42.298 21.027 L 45.21 47.27 Z"
+      style="stroke: url('#color-0'); stroke-linecap: round; stroke-linejoin: round; fill: url('#gradient-2-3'); stroke-width: 2.02379px;" />
+    <path
+      d="M52.1,55.76v4.05H11.9v-4.05c0-1.48,0.28-2.75,0.83-3.79c0.01-0.01,0.02-0.03,0.029-0.05c1.25-2.29,3.841-3.54,8.171-3.93   c1.06-0.1,2.199-0.15,3.479-0.15h15.18c1.5,0,2.87,0.07,4.08,0.21c4,0.45,6.5,1.77,7.65,4.01l0.029,0.06   C51.85,53.12,52.1,54.35,52.1,55.76z"
+      style="stroke: url('#color-0'); stroke-linecap: round; stroke-linejoin: round; fill: url('#gradient-2-4'); stroke-width: 2.02379px;" />
+  </g>
+  <g style="filter: none;" transform="matrix(1, 0, 0, 1, 60.180642, 2.056871)" />
+</svg>

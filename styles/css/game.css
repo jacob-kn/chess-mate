@@ -1,0 +1,918 @@
+/* Course: SENG 513 */
+/* Date: OCT 23, 2023 */
+/* Assignment 2 */
+/* Name: Jacob Nguyen */
+/* UCID: 30087465 */
+/* Course: SENG 513 */
+/* Date: OCT 23, 2023 */
+/* Assignment 2 */
+/* Name: Jacob Nguyen */
+/* UCID: 30087465 */
+button {
+  border: none;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  transition: all 0.15s ease-in-out;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+@media (hover: hover) {
+  button:hover {
+    transform: scale(1.03);
+  }
+}
+
+body {
+  font: 100% "Inter", sans-serif;
+  color: #e0d0c1;
+  background-color: #0e1a15;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+footer {
+  margin-top: auto;
+  height: 0;
+  width: 100vw;
+  box-sizing: border-box;
+  padding: 0 1.5rem;
+  text-align: center;
+  border-top: 2px solid #5e503f;
+  font-size: 0.8rem;
+}
+@media (min-width: 768px) {
+  footer {
+    font-size: 1rem;
+  }
+}
+
+button {
+  background-color: #5e503f;
+  box-shadow: 0 1px 3px rgba(94, 80, 63, 0.15), 0 1px 3px rgba(94, 80, 63, 0.2);
+  color: #eff0e2;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  font: inherit;
+  margin: 0.2rem;
+}
+
+div.hidden {
+  display: none;
+}
+
+.logo a {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  font-size: 3rem;
+  letter-spacing: -0.13em;
+  padding-right: 0.13em;
+  line-height: 0.8em;
+  margin: 1rem;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
+.game-layout {
+  display: grid;
+  grid-template-rows: 80px 1fr 80px 70px;
+  grid-template-columns: 2fr 1fr;
+  grid-template-areas: "top-player     top-clock" "board          board" "bottom-player  bottom-clock" "controls       controls";
+  gap: 8px;
+  margin: auto;
+}
+@media (min-width: 768px) {
+  .game-layout {
+    width: min(80vw, 800px);
+    grid-template-rows: 50px 1fr min-content 1fr 50px;
+    grid-template-areas: "top-player     ." "board          top-clock" "board          controls" "board          bottom-clock" "bottom-player  .";
+  }
+}
+
+.player {
+  align-self: center;
+  padding-left: 1em;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  line-height: 1.5;
+}
+.player .score {
+  font-weight: bold;
+  display: inline-block;
+  margin-right: 0.5em;
+  border-radius: 0.2em;
+  padding: 0.1em 0.5em;
+  margin-right: 0.25em;
+  background-color: #22333b;
+}
+.player > i {
+  line-height: 1.5;
+  font-size: 1.3em;
+  border-radius: 0.2em;
+  padding: 0 0.5em;
+  margin-right: 0.25em;
+  margin-bottom: 0.25em;
+}
+.player .material {
+  margin-left: 0.25em;
+  padding-left: 0.25em;
+  border-left: solid;
+  border-radius: 0.25em;
+  display: inline-block;
+}
+.player .material span {
+  padding-right: 0.25em;
+}
+.player .material span i {
+  width: 0.1em;
+}
+.player .material .material-difference {
+  font-size: 0.75em;
+  vertical-align: super;
+}
+.player[data-player-color=white] > i {
+  background-color: #383e43;
+}
+.player[data-player-color=white] .material {
+  background-color: #dbdbdb;
+  color: #383e43;
+}
+.player[data-player-color=black] > i {
+  background-color: #dbdbdb;
+  color: #383e43;
+}
+.player .name {
+  display: none;
+}
+@media (min-width: 360px) {
+  .player .name {
+    display: inline-block;
+  }
+}
+
+#top-player {
+  grid-area: top-player;
+  align-self: end;
+}
+
+#bottom-player {
+  grid-area: bottom-player;
+  align-self: start;
+}
+
+#game-controls {
+  grid-area: controls;
+  place-self: start center;
+  display: flex;
+  flex-wrap: wrap-reverse;
+  flex-direction: row-reverse;
+}
+#game-controls button {
+  flex-grow: 1;
+}
+
+.clock {
+  justify-self: end;
+  font-weight: bold;
+  border-radius: 0.5rem;
+  padding: 0 1em;
+  line-height: 2em;
+  white-space: nowrap;
+}
+.clock i {
+  padding-right: 0.25em;
+}
+.clock .fa-fade {
+  --fa-animation-duration: 3s;
+}
+.clock[data-clock-color=white] {
+  background-color: #dbdbdb;
+  color: #383e43;
+}
+.clock[data-clock-color=black] {
+  background-color: #383e43;
+}
+.clock[data-clock-turn=false] {
+  opacity: 0.3;
+}
+@media (min-width: 768px) {
+  .clock {
+    justify-self: stretch;
+    padding: 0 auto;
+    text-align: center;
+    font-size: 2rem;
+  }
+}
+
+#top-clock {
+  grid-area: top-clock;
+  align-self: end;
+}
+
+#bottom-clock {
+  grid-area: bottom-clock;
+  align-self: start;
+}
+
+.board-container {
+  grid-area: board;
+  position: relative;
+}
+
+#board {
+  background-image: url("../../assets/board.svg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 0.5rem;
+  position: relative;
+  width: min(500px, 100vw);
+  height: min(500px, 100vw);
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  box-sizing: border-box;
+}
+
+#coordinates {
+  position: absolute;
+  display: flex;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  font-weight: bold;
+  font-size: 0.6rem;
+  top: 2px;
+  left: 2px;
+  height: 100%;
+  width: 100%;
+}
+#coordinates span {
+  flex: 1 1 auto;
+}
+#coordinates span:nth-child(2n+1) {
+  color: #c6ac8f;
+}
+#coordinates span:nth-child(2n) {
+  color: #5e503f;
+}
+#coordinates .ranks {
+  display: inherit;
+  flex-flow: column-reverse;
+  height: 100%;
+}
+#coordinates .files {
+  display: inherit;
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  flex-flow: row;
+  width: 100%;
+  text-align: right;
+}
+#coordinates.flipped .ranks {
+  flex-flow: column;
+}
+#coordinates.flipped .files {
+  flex-flow: row-reverse;
+}
+#coordinates.flipped span:nth-child(2n+1) {
+  color: #5e503f;
+}
+#coordinates.flipped span:nth-child(2n) {
+  color: #c6ac8f;
+}
+
+.piece {
+  z-index: 2;
+  will-change: transform;
+  cursor: grab;
+}
+
+.w-king {
+  background-image: url(../../assets/chess-pieces/w-king.svg);
+}
+
+.b-king {
+  background-image: url(../../assets/chess-pieces/b-king.svg);
+}
+
+.w-queen {
+  background-image: url(../../assets/chess-pieces/w-queen.svg);
+}
+
+.b-queen {
+  background-image: url(../../assets/chess-pieces/b-queen.svg);
+}
+
+.w-rook {
+  background-image: url(../../assets/chess-pieces/w-rook.svg);
+}
+
+.b-rook {
+  background-image: url(../../assets/chess-pieces/b-rook.svg);
+}
+
+.w-bishop {
+  background-image: url(../../assets/chess-pieces/w-bishop.svg);
+}
+
+.b-bishop {
+  background-image: url(../../assets/chess-pieces/b-bishop.svg);
+}
+
+.w-knight {
+  background-image: url(../../assets/chess-pieces/w-knight.svg);
+}
+
+.b-knight {
+  background-image: url(../../assets/chess-pieces/b-knight.svg);
+}
+
+.w-pawn {
+  background-image: url(../../assets/chess-pieces/w-pawn.svg);
+}
+
+.b-pawn {
+  background-image: url(../../assets/chess-pieces/b-pawn.svg);
+}
+
+.h8, .h7, .h6, .h5, .h4, .h3, .h2, .h1, .g8, .g7, .g6, .g5, .g4, .g3, .g2, .g1, .f8, .f7, .f6, .f5, .f4, .f3, .f2, .f1, .e8, .e7, .e6, .e5, .e4, .e3, .e2, .e1, .d8, .d7, .d6, .d5, .d4, .d3, .d2, .d1, .c8, .c7, .c6, .c5, .c4, .c3, .c2, .c1, .b8, .b7, .b6, .b5, .b4, .b3, .b2, .b1, .a8, .a7, .a6, .a5, .a4, .a3, .a2, .a1 {
+  background-size: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 12.5%;
+  height: 12.5%;
+  box-sizing: inherit;
+}
+
+.a1 {
+  transform: translateX(0%) translateY(700%);
+}
+
+.flipped.a1 {
+  transform: translateX(700%) translateY(0%);
+}
+
+.a2 {
+  transform: translateX(0%) translateY(600%);
+}
+
+.flipped.a2 {
+  transform: translateX(700%) translateY(100%);
+}
+
+.a3 {
+  transform: translateX(0%) translateY(500%);
+}
+
+.flipped.a3 {
+  transform: translateX(700%) translateY(200%);
+}
+
+.a4 {
+  transform: translateX(0%) translateY(400%);
+}
+
+.flipped.a4 {
+  transform: translateX(700%) translateY(300%);
+}
+
+.a5 {
+  transform: translateX(0%) translateY(300%);
+}
+
+.flipped.a5 {
+  transform: translateX(700%) translateY(400%);
+}
+
+.a6 {
+  transform: translateX(0%) translateY(200%);
+}
+
+.flipped.a6 {
+  transform: translateX(700%) translateY(500%);
+}
+
+.a7 {
+  transform: translateX(0%) translateY(100%);
+}
+
+.flipped.a7 {
+  transform: translateX(700%) translateY(600%);
+}
+
+.a8 {
+  transform: translateX(0%) translateY(0%);
+}
+
+.flipped.a8 {
+  transform: translateX(700%) translateY(700%);
+}
+
+.b1 {
+  transform: translateX(100%) translateY(700%);
+}
+
+.flipped.b1 {
+  transform: translateX(600%) translateY(0%);
+}
+
+.b2 {
+  transform: translateX(100%) translateY(600%);
+}
+
+.flipped.b2 {
+  transform: translateX(600%) translateY(100%);
+}
+
+.b3 {
+  transform: translateX(100%) translateY(500%);
+}
+
+.flipped.b3 {
+  transform: translateX(600%) translateY(200%);
+}
+
+.b4 {
+  transform: translateX(100%) translateY(400%);
+}
+
+.flipped.b4 {
+  transform: translateX(600%) translateY(300%);
+}
+
+.b5 {
+  transform: translateX(100%) translateY(300%);
+}
+
+.flipped.b5 {
+  transform: translateX(600%) translateY(400%);
+}
+
+.b6 {
+  transform: translateX(100%) translateY(200%);
+}
+
+.flipped.b6 {
+  transform: translateX(600%) translateY(500%);
+}
+
+.b7 {
+  transform: translateX(100%) translateY(100%);
+}
+
+.flipped.b7 {
+  transform: translateX(600%) translateY(600%);
+}
+
+.b8 {
+  transform: translateX(100%) translateY(0%);
+}
+
+.flipped.b8 {
+  transform: translateX(600%) translateY(700%);
+}
+
+.c1 {
+  transform: translateX(200%) translateY(700%);
+}
+
+.flipped.c1 {
+  transform: translateX(500%) translateY(0%);
+}
+
+.c2 {
+  transform: translateX(200%) translateY(600%);
+}
+
+.flipped.c2 {
+  transform: translateX(500%) translateY(100%);
+}
+
+.c3 {
+  transform: translateX(200%) translateY(500%);
+}
+
+.flipped.c3 {
+  transform: translateX(500%) translateY(200%);
+}
+
+.c4 {
+  transform: translateX(200%) translateY(400%);
+}
+
+.flipped.c4 {
+  transform: translateX(500%) translateY(300%);
+}
+
+.c5 {
+  transform: translateX(200%) translateY(300%);
+}
+
+.flipped.c5 {
+  transform: translateX(500%) translateY(400%);
+}
+
+.c6 {
+  transform: translateX(200%) translateY(200%);
+}
+
+.flipped.c6 {
+  transform: translateX(500%) translateY(500%);
+}
+
+.c7 {
+  transform: translateX(200%) translateY(100%);
+}
+
+.flipped.c7 {
+  transform: translateX(500%) translateY(600%);
+}
+
+.c8 {
+  transform: translateX(200%) translateY(0%);
+}
+
+.flipped.c8 {
+  transform: translateX(500%) translateY(700%);
+}
+
+.d1 {
+  transform: translateX(300%) translateY(700%);
+}
+
+.flipped.d1 {
+  transform: translateX(400%) translateY(0%);
+}
+
+.d2 {
+  transform: translateX(300%) translateY(600%);
+}
+
+.flipped.d2 {
+  transform: translateX(400%) translateY(100%);
+}
+
+.d3 {
+  transform: translateX(300%) translateY(500%);
+}
+
+.flipped.d3 {
+  transform: translateX(400%) translateY(200%);
+}
+
+.d4 {
+  transform: translateX(300%) translateY(400%);
+}
+
+.flipped.d4 {
+  transform: translateX(400%) translateY(300%);
+}
+
+.d5 {
+  transform: translateX(300%) translateY(300%);
+}
+
+.flipped.d5 {
+  transform: translateX(400%) translateY(400%);
+}
+
+.d6 {
+  transform: translateX(300%) translateY(200%);
+}
+
+.flipped.d6 {
+  transform: translateX(400%) translateY(500%);
+}
+
+.d7 {
+  transform: translateX(300%) translateY(100%);
+}
+
+.flipped.d7 {
+  transform: translateX(400%) translateY(600%);
+}
+
+.d8 {
+  transform: translateX(300%) translateY(0%);
+}
+
+.flipped.d8 {
+  transform: translateX(400%) translateY(700%);
+}
+
+.e1 {
+  transform: translateX(400%) translateY(700%);
+}
+
+.flipped.e1 {
+  transform: translateX(300%) translateY(0%);
+}
+
+.e2 {
+  transform: translateX(400%) translateY(600%);
+}
+
+.flipped.e2 {
+  transform: translateX(300%) translateY(100%);
+}
+
+.e3 {
+  transform: translateX(400%) translateY(500%);
+}
+
+.flipped.e3 {
+  transform: translateX(300%) translateY(200%);
+}
+
+.e4 {
+  transform: translateX(400%) translateY(400%);
+}
+
+.flipped.e4 {
+  transform: translateX(300%) translateY(300%);
+}
+
+.e5 {
+  transform: translateX(400%) translateY(300%);
+}
+
+.flipped.e5 {
+  transform: translateX(300%) translateY(400%);
+}
+
+.e6 {
+  transform: translateX(400%) translateY(200%);
+}
+
+.flipped.e6 {
+  transform: translateX(300%) translateY(500%);
+}
+
+.e7 {
+  transform: translateX(400%) translateY(100%);
+}
+
+.flipped.e7 {
+  transform: translateX(300%) translateY(600%);
+}
+
+.e8 {
+  transform: translateX(400%) translateY(0%);
+}
+
+.flipped.e8 {
+  transform: translateX(300%) translateY(700%);
+}
+
+.f1 {
+  transform: translateX(500%) translateY(700%);
+}
+
+.flipped.f1 {
+  transform: translateX(200%) translateY(0%);
+}
+
+.f2 {
+  transform: translateX(500%) translateY(600%);
+}
+
+.flipped.f2 {
+  transform: translateX(200%) translateY(100%);
+}
+
+.f3 {
+  transform: translateX(500%) translateY(500%);
+}
+
+.flipped.f3 {
+  transform: translateX(200%) translateY(200%);
+}
+
+.f4 {
+  transform: translateX(500%) translateY(400%);
+}
+
+.flipped.f4 {
+  transform: translateX(200%) translateY(300%);
+}
+
+.f5 {
+  transform: translateX(500%) translateY(300%);
+}
+
+.flipped.f5 {
+  transform: translateX(200%) translateY(400%);
+}
+
+.f6 {
+  transform: translateX(500%) translateY(200%);
+}
+
+.flipped.f6 {
+  transform: translateX(200%) translateY(500%);
+}
+
+.f7 {
+  transform: translateX(500%) translateY(100%);
+}
+
+.flipped.f7 {
+  transform: translateX(200%) translateY(600%);
+}
+
+.f8 {
+  transform: translateX(500%) translateY(0%);
+}
+
+.flipped.f8 {
+  transform: translateX(200%) translateY(700%);
+}
+
+.g1 {
+  transform: translateX(600%) translateY(700%);
+}
+
+.flipped.g1 {
+  transform: translateX(100%) translateY(0%);
+}
+
+.g2 {
+  transform: translateX(600%) translateY(600%);
+}
+
+.flipped.g2 {
+  transform: translateX(100%) translateY(100%);
+}
+
+.g3 {
+  transform: translateX(600%) translateY(500%);
+}
+
+.flipped.g3 {
+  transform: translateX(100%) translateY(200%);
+}
+
+.g4 {
+  transform: translateX(600%) translateY(400%);
+}
+
+.flipped.g4 {
+  transform: translateX(100%) translateY(300%);
+}
+
+.g5 {
+  transform: translateX(600%) translateY(300%);
+}
+
+.flipped.g5 {
+  transform: translateX(100%) translateY(400%);
+}
+
+.g6 {
+  transform: translateX(600%) translateY(200%);
+}
+
+.flipped.g6 {
+  transform: translateX(100%) translateY(500%);
+}
+
+.g7 {
+  transform: translateX(600%) translateY(100%);
+}
+
+.flipped.g7 {
+  transform: translateX(100%) translateY(600%);
+}
+
+.g8 {
+  transform: translateX(600%) translateY(0%);
+}
+
+.flipped.g8 {
+  transform: translateX(100%) translateY(700%);
+}
+
+.h1 {
+  transform: translateX(700%) translateY(700%);
+}
+
+.flipped.h1 {
+  transform: translateX(0%) translateY(0%);
+}
+
+.h2 {
+  transform: translateX(700%) translateY(600%);
+}
+
+.flipped.h2 {
+  transform: translateX(0%) translateY(100%);
+}
+
+.h3 {
+  transform: translateX(700%) translateY(500%);
+}
+
+.flipped.h3 {
+  transform: translateX(0%) translateY(200%);
+}
+
+.h4 {
+  transform: translateX(700%) translateY(400%);
+}
+
+.flipped.h4 {
+  transform: translateX(0%) translateY(300%);
+}
+
+.h5 {
+  transform: translateX(700%) translateY(300%);
+}
+
+.flipped.h5 {
+  transform: translateX(0%) translateY(400%);
+}
+
+.h6 {
+  transform: translateX(700%) translateY(200%);
+}
+
+.flipped.h6 {
+  transform: translateX(0%) translateY(500%);
+}
+
+.h7 {
+  transform: translateX(700%) translateY(100%);
+}
+
+.flipped.h7 {
+  transform: translateX(0%) translateY(600%);
+}
+
+.h8 {
+  transform: translateX(700%) translateY(0%);
+}
+
+.flipped.h8 {
+  transform: translateX(0%) translateY(700%);
+}
+
+.highlight {
+  background-color: rgba(239, 240, 226, 0.25);
+}
+
+.movable {
+  cursor: pointer;
+  z-index: 1;
+}
+.movable::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: rgba(34, 51, 59, 0.3);
+  border-radius: 50%;
+  background-clip: content-box;
+  padding: 35%;
+  transition: padding 0.1s ease-out;
+}
+.movable:hover::before {
+  padding: 25%;
+}
+
+.capturable {
+  cursor: grab;
+  z-index: 3;
+}
+.capturable::before {
+  content: "";
+  z-index: 0;
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  border: 4px solid rgba(34, 51, 59, 0.3);
+  border-radius: 50%;
+  transition: padding 0.1s ease-in;
+}
+.capturable:hover::before {
+  background-color: rgba(34, 51, 59, 0.3);
+  border-color: transparent;
+  background-clip: content-box;
+  padding: 10%;
+}/*# sourceMappingURL=game.css.map */
