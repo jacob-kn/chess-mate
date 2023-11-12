@@ -6,7 +6,7 @@
  * UCID: 30087465
  */
 
-import { ChessGame } from "./modules/chess-game";
+import { ChessGame } from "./modules/chess-game.js";
 
 // This file contains the javascript for the play.html page.
 
@@ -14,11 +14,11 @@ import { ChessGame } from "./modules/chess-game";
   // Query the DOM for the game settings and create a new ChessGame object
 
   // Example settings:
-  const timeControl = {minutes: 5, increment: 2};
+  const timeControl = { minutes: 5, increment: 2 };
   const game = new ChessGame("two", timeControl, "white");
 
   document.querySelectorAll('.piece').forEach((piece) => {
-    // call chessboard.selectPiece(square) on mouse down
+    piece.addEventListener('mousedown', (e) => game.board.selectPiece(e));
   });
 
   // Handle resign, draw, and new game buttons

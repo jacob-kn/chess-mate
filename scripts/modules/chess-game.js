@@ -29,6 +29,7 @@ export class ChessGame {
     this.mode = mode;
     this.timeControl = timeControl;
     this.color = color;
+    this.start();
   }
 
   /**

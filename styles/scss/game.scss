@@ -86,9 +86,12 @@
         display: inline-block;
 
         span {
-            padding-right: 0.25em;
             i {
-                width: 0.1em;
+                width: 0.4em;
+
+                &:last-child {
+                    padding-right: 0.25em;
+                }
             }
         }
 
@@ -253,24 +256,24 @@
         width: 100%;
         text-align: right;
     }
+}
 
-    &.flipped {
-        .ranks {
-            flex-flow: column;
+.flipped > #coordinates {
+    .ranks {
+        flex-flow: column;
+    }
+
+    .files {
+        flex-flow: row-reverse;
+    }
+
+    span {
+        &:nth-child(2n + 1) {
+            color: base.$primary-color;
         }
 
-        .files {
-            flex-flow: row-reverse;
-        }
-
-        span {
-            &:nth-child(2n + 1) {
-                color: base.$primary-color;
-            }
-
-            &:nth-child(2n) {
-                color: base.$secondary-color;
-            }
+        &:nth-child(2n) {
+            color: base.$secondary-color;
         }
     }
 }
@@ -280,6 +283,8 @@
     z-index: 2;
     will-change: transform;
     cursor: grab;
+    transition: transform 50ms linear;
+    backface-visibility: hidden;
 }
 
 $pieces: king, queen, rook, bishop, knight, pawn;
@@ -320,7 +325,7 @@ $file-position: 0%;
         // flipped
         $flipped-file-position: calc(700% - $file-position);
         $flipped-rank-position: calc(700% - $rank-position);
-        .flipped.#{$file}#{$rank} {
+        .flipped > .#{$file}#{$rank} {
             transform: translateX($flipped-file-position)
                 translateY($flipped-rank-position);
         }
@@ -329,7 +334,17 @@ $file-position: 0%;
 }
 
 .highlight {
-    background-color: rgba(base.$on-primary, 0.25);
+    &.selected,
+    &.last-move {
+        background-color: #52d1dc84;
+        &.threat {
+            background-color: #52d1dc84;
+        }
+    }
+
+    &.threat {
+        background-color: #c23f3f;
+    }
 }
 
 .movable {
