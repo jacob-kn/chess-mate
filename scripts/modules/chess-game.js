@@ -41,6 +41,11 @@ export class ChessGame {
     // Initialize the clock if time control is enabled
     this.board.initializeClock(this.timeControl);
 
+    document.addEventListener('gameOver', (e) => {
+      console.log(e.detail.winner, e.detail.reason);
+      this.board.stopClock(true);
+    });
+
     // If mode is against computer, initialize the computer player with the board object
     // In a loop, check if the current player is the computer player, and if so, call the makeMove() method
     // Otherwise, wait for the player to make a move

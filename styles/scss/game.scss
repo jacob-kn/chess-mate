@@ -157,16 +157,28 @@
     justify-self: end;
     font-weight: bold;
     border-radius: 0.5rem;
-    padding: 0 1em;
-    line-height: 2em;
+    padding: 0.5em 0.8em;
     white-space: nowrap;
+    transition: all 0.15s ease-in-out;
 
-    i {
-        padding-right: 0.25em;
-    }
+    div {
+        @include base.md {
+            font-size: 2rem;
+        }
 
-    .fa-fade {
-        --fa-animation-duration: 3s;
+        i {
+            padding-right: 0.25em;
+        }
+
+        span {
+            display: inline-block;
+            width: 3.5em;
+            text-align: center;
+        }
+
+        .fa-fade {
+            --fa-animation-duration: 3s;
+        }
     }
 
     &[data-clock-color="white"] {
@@ -184,9 +196,8 @@
 
     @include base.md {
         justify-self: stretch;
-        padding: 0 auto;
         text-align: center;
-        font-size: 2rem;
+        font-size: 1.25rem;
     }
 }
 

@@ -349,6 +349,9 @@ export class ChessBoard {
       this.moveCounter = 0;
     }
 
+    // update the clock
+    this._updateClock();
+
     // switch player turn
     this.switchPlayer();
 
@@ -368,11 +371,6 @@ export class ChessBoard {
     // highlight king if in check
     if (this._checkInfo.checks.length > 0) {
       this._highlightSquare(this._kingPosition[this.turn], 'threat');
-    }
-
-    // update the clock
-    if (this.whiteClock) {
-      this._updateClock();
     }
   }
 
@@ -414,6 +412,14 @@ export class ChessBoard {
 
     // Start the clock for white
     this.whiteClock.start();
+  }
+
+  /**
+   * Stops the game clocks.
+   */
+  stopClock() {
+    this.whiteClock.stop(true);
+    this.blackClock.stop(true);
   }
 
   /**
@@ -960,21 +966,27 @@ export class ChessBoard {
     const isFiftyMoveRule = this._moveCounter >= 50;
 
     if (isCheckmate) {
-      this._endGame("checkmate");
+      this._endGame(this.turn === 'white' ? 'black' : 'white', 'checkmate');
     } else if (isStalemate) {
-      this._endGame("stalemate");
+      this._endGame(null, 'stalemate');
     } else if (isFiftyMoveRule) {
-      this._endGame("fifty-move-rule");
+      this._endGame(null, 'fifty-move-rule');
     }
   }
 
   /**
-   * Ends the game and logs the result to the console.
-   * @param {string} result - The result of the game (e.g. "white wins", "black wins", "draw").
+   * Dispatches a custom event to indicate that the game has ended.
+   * @param {string|null} winner - The color of the winning player, or null if the game is a draw.
+   * @param {string} reason - The reason for the game end (e.g. "checkmate", "stalemate", "fifty-move-rule").
    * @private
    */
-  _endGame(result) {
-    console.log(result);
+  _endGame(winner, reason) {
+    document.dispatchEvent(new CustomEvent('gameOver', {
+      detail: {
+        winner: winner,
+        reason: reason
+      }
+    }));
   }
 
   /**

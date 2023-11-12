@@ -186,14 +186,24 @@ div.hidden {
   justify-self: end;
   font-weight: bold;
   border-radius: 0.5rem;
-  padding: 0 1em;
-  line-height: 2em;
+  padding: 0.5em 0.8em;
   white-space: nowrap;
+  transition: all 0.15s ease-in-out;
 }
-.clock i {
+@media (min-width: 768px) {
+  .clock div {
+    font-size: 2rem;
+  }
+}
+.clock div i {
   padding-right: 0.25em;
 }
-.clock .fa-fade {
+.clock div span {
+  display: inline-block;
+  width: 3.5em;
+  text-align: center;
+}
+.clock div .fa-fade {
   --fa-animation-duration: 3s;
 }
 .clock[data-clock-color=white] {
@@ -209,9 +219,8 @@ div.hidden {
 @media (min-width: 768px) {
   .clock {
     justify-self: stretch;
-    padding: 0 auto;
     text-align: center;
-    font-size: 2rem;
+    font-size: 1.25rem;
   }
 }
 
