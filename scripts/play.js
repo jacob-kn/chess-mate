@@ -15,10 +15,6 @@ import { ChessGame } from "./modules/chess-game.js";
   const { mode, timeControl, color } = getGameSettings();
   const game = new ChessGame(mode, timeControl, color);
 
-  document.querySelectorAll('.piece').forEach((piece) => {
-    piece.addEventListener('mousedown', (e) => game.board.selectPiece(e));
-  });
-
   // Handle resign, draw, and new game buttons
   document.getElementById('resign').addEventListener('click', () => {
     game.resign();
@@ -33,7 +29,7 @@ import { ChessGame } from "./modules/chess-game.js";
   function getGameSettings() {
     const gameType = localStorage.getItem("gameType");
     const timeControlEnabled = localStorage.getItem("timeControl") === "true";
-    const minutesPerSide = parseInt(localStorage.getItem("minutesPerSide"));
+    const minutesPerSide = parseFloat(localStorage.getItem("minutesPerSide"));
     const incrementSeconds = parseInt(localStorage.getItem("incrementSeconds"));
     let color = localStorage.getItem("colorChoice");
 

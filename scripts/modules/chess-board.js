@@ -7,7 +7,6 @@
  */
 
 import { ChessClock } from "./clock.js";
-import { Modal } from "./modal.js";
 
 /**
  * Represents a chess board and its game logic.
@@ -80,6 +79,45 @@ export class ChessBoard {
     clone._moveCounter = this._moveCounter;
     clone._kingPosition = JSON.parse(JSON.stringify(this._kingPosition));
     return clone;
+  }
+
+  /**
+   * Removes existing pieces and creates new pieces in the DOM from the board array.
+   */
+  initializePieces() {
+    // Remove all existing pieces from the DOM
+    const pieces = document.querySelectorAll('.piece, .highlight');
+    pieces.forEach(piece => piece.remove());
+
+    for (let rank = 0; rank < 8; rank++) {
+      for (let file = 0; file < 8; file++) {
+        const pieceType = this.board[rank][file];
+        if (pieceType !== ' ') {
+          const color = pieceType === pieceType.toLowerCase() ? 'b' : 'w';
+          const square = String.fromCharCode(file + 97) + (8 - rank);
+          const piece = this._createPieceElement(pieceType, color, square);
+          piece.addEventListener('mousedown', (e) => this.selectPiece(e));
+          this.boardElement.appendChild(piece);
+        }
+      }
+    }
+  }
+
+  /**
+   * Creates a piece element.
+   * @param {string} pieceType - The type of piece.
+   * @param {string} color - The color of the piece.
+   * @param {string} square - The square the piece is on.
+   * @returns {HTMLElement} The piece element.
+   */
+  _createPieceElement(pieceType, color, square) {
+    const pieceNames = {
+      p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king'
+    };
+    const piece = pieceNames[pieceType.toLowerCase()];
+    const pieceElement = document.createElement('div');
+    pieceElement.classList.add(`${color}-${piece}`, 'piece', square);
+    return pieceElement;
   }
 
   /**
@@ -258,9 +296,10 @@ export class ChessBoard {
 
           selectedPiece = null;
         });
+      } else {
+        window.addEventListener('mousedown', boundClick, true);
       }
 
-      window.addEventListener('mousedown', boundClick, true);
       window.removeEventListener('mouseup', boundDragEnd);
       window.removeEventListener('mousemove', boundDrag);
     };
@@ -287,7 +326,7 @@ export class ChessBoard {
       this._removeSquareEffects('movable', 'capturable', 'castle', 'selected');
 
       selectedPiece = null;
-      window.removeEventListener('mousedown', boundClick);
+      window.removeEventListener('mousedown', boundClick, true);
     }
   }
 
@@ -313,7 +352,7 @@ export class ChessBoard {
     const relativeY = materialRect.top - boardRect.top - capturedPiece.offsetHeight / 2;
 
     // animate the piece to the new square
-    capturedPiece.style.zIndex = 0;
+    capturedPiece.style.zIndex = 1;
     capturedPiece.style.pointerEvents = 'none';
     capturedPiece.style.transition = 'transform 0.8s ease-in-out';
     capturedPiece.style.transform = `translate3d(${relativeX}px, ${relativeY}px, 0) scale(0.3)`;

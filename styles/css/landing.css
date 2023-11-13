@@ -62,6 +62,10 @@ button {
   font: inherit;
   margin: 0.2rem;
 }
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 div.hidden {
   display: none;

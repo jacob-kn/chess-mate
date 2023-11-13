@@ -9,7 +9,6 @@
 // imports
 import { ChessBoard } from "./chess-board.js";
 import { ChessComputer } from "./computer.js";
-import { ChessClock } from "./clock.js";
 import { Modal } from "./modal.js";
 
 /**
@@ -38,15 +37,55 @@ export class ChessGame {
 
   start() {
     this.board = new ChessBoard();
+    this.board.initializePieces();
+
+    const resignButton = document.getElementById('resign');
+    const drawButton = document.getElementById('draw');
+    const newGameButton = document.getElementById('new-game');
+
+    const controller = new AbortController();
 
     document.addEventListener('gameOver', (e) => {
-      console.log(e.detail.winner, e.detail.reason);
       this.board.stopClock(true);
-    });
+      const winner = e.detail.winner;
+      const reason = e.detail.reason;
+      if (winner === null) {
+        const topPlayer = document.querySelector('#top-player');
+        const bottomPlayer = document.querySelector('#bottom-player');
+        topPlayer.querySelector('.score').textContent = parseFloat(topPlayer.querySelector('.score').textContent) + 0.5;
+        bottomPlayer.querySelector('.score').textContent = parseFloat(bottomPlayer.querySelector('.score').textContent) + 0.5;
+      } else {
+        const winningPlayer = document.querySelector(`[data-player-color="${winner}"]`);
+        winningPlayer.querySelector('.score').textContent = parseFloat(winningPlayer.querySelector('.score').textContent) + 1;
+      }
+      const boardElement = document.getElementById('board').children;
+      for (const child of boardElement) {
+        child.style.pointerEvents = 'none';
+      };
 
-    // If mode is against computer, initialize the computer player with the board object
-    // In a loop, check if the current player is the computer player, and if so, call the makeMove() method
-    // Otherwise, wait for the player to make a move
+      resignButton.disabled = true;
+      drawButton.disabled = true;
+      newGameButton.disabled = false;
+
+      if (this.openModal) this.openModal.closeModal();
+      this.openModal = new Modal('game-over', winner, reason);
+    }, { once: true, signal: controller.signal });
+
+    document.addEventListener('newGame', () => {
+      const boardElement = document.getElementById('board').children;
+      for (const child of boardElement) {
+        child.removeAttribute('style');
+      };
+      if (this.mode === 'two') {
+        drawButton.disabled = false;
+      } else {
+        newGameButton.disabled = true;
+      }
+      resignButton.disabled = false;
+
+      controller.abort();
+      this.start();
+    }, { once: true });
 
     // Change player names based on game mode
     const topPlayer = document.querySelector('#top-player .name');
@@ -64,6 +103,9 @@ export class ChessGame {
 
       // Initialize the computer player
       this.computer = new ChessComputer(this.board, this.color === 'black' ? 'white' : 'black');
+
+      drawButton.disabled = true;
+      newGameButton.disabled = true;
     }
 
     topPlayer.parentElement.dataset.playerColor = this.color === 'black' ? 'white' : 'black';
@@ -86,7 +128,7 @@ export class ChessGame {
       if (this.mode === 'computer' && e.detail.turn === this.computer.color) {
         this.computer.makeMove();
       }
-    });
+    }, { signal: controller.signal });
   }
 
 
@@ -97,6 +139,8 @@ export class ChessGame {
     // Open the resign modal
     // If the player confirms resignation, update player score (+1 for opponent)
     // End the game by opening the game over modal with the result
+    if (this.openModal) this.openModal.closeModal();
+    this.openModal = new Modal('resign', this.board.turn === 'white' ? 'black' : 'white');
   }
 
   /**
@@ -106,6 +150,8 @@ export class ChessGame {
     // Open the draw modal
     // If the player confirms draw, update player score (+0.5 for each player)
     // End the game by opening the game over modal with the result
+    if (this.openModal) this.openModal.closeModal();
+    this.openModal = new Modal('draw');
   }
 
   /**
@@ -114,7 +160,8 @@ export class ChessGame {
   newGame() {
     // Open the new game modal
     // If the player confirms, start a new game
-    this.start();
+    if (this.openModal) this.openModal.closeModal();
+    this.openModal = new Modal('new-game');
   }
 
 }

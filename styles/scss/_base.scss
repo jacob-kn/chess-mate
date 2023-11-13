@@ -94,6 +94,11 @@ button {
     appearance: none;
     font: inherit;
     margin: 0.2rem;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 }
 
 div.hidden {

@@ -45,6 +45,7 @@ export class ChessClock {
     this.timeElement = document.createElement('span');
     div.appendChild(this.iconElement);
     div.appendChild(this.timeElement);
+    this.clockElement.innerHTML = '';
     this.clockElement.appendChild(div);
     this.updateClock();
   }
