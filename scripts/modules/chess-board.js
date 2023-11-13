@@ -266,7 +266,8 @@ export class ChessBoard {
     this._updatePlayerMaterial(piece);
 
     // Add animation for captured piece to shrink and move to player material
-    const capturedPiece = document.querySelector(`.piece.${square}`);
+    const color = piece.color === 'white' ? 'w' : 'b';
+    const capturedPiece = document.querySelector(`[class^=${color}].piece.${square}`);
     const materialElement = document.querySelector(`[data-player-color=${this.turn}] > .material`);
     const materialRect = materialElement.getBoundingClientRect();
     const boardRect = this.boardElement.getBoundingClientRect(); // position of the board
@@ -297,8 +298,11 @@ export class ChessBoard {
     const piece = document.querySelector(`.piece.${from}`);
 
     // get position of "to" square
-    const toSquare = document.querySelector(`.${to}`);
+    const toSquare = document.createElement('div');
+    toSquare.classList.add(to);
+    this.boardElement.appendChild(toSquare);
     const toPosition = window.getComputedStyle(toSquare).getPropertyValue('transform');
+    toSquare.remove();
     const matrix = new DOMMatrixReadOnly(toPosition);
     const translateX = matrix.m41;
     const translateY = matrix.m42;
