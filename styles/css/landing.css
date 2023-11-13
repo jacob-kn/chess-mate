@@ -206,6 +206,10 @@ input[type=range]::-webkit-slider-thumb, input[type=range]::-moz-range-thumb {
   margin-top: -0.5rem;
 }
 
+#play-as span {
+  text-transform: capitalize;
+}
+
 .color-selection {
   background-color: #22333b;
   box-shadow: 0 1px 3px rgba(34, 51, 59, 0.15), 0 1px 3px rgba(34, 51, 59, 0.2);

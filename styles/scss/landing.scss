@@ -152,6 +152,10 @@ input[type="range"] {
 }
 
 // COLOR SELECTION
+#play-as span {
+    text-transform: capitalize;
+}
+
 .color-selection {
     @include base.theme;
     @extend %radio-container;
