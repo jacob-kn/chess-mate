@@ -63,7 +63,7 @@ export class ChessGame {
       bottomPlayer.textContent = 'Player';
 
       // Initialize the computer player
-      this.computer = new ChessComputer(this.board, this.color);
+      this.computer = new ChessComputer(this.board, this.color === 'black' ? 'white' : 'black');
     }
 
     topPlayer.parentElement.dataset.playerColor = this.color === 'black' ? 'white' : 'black';
@@ -80,6 +80,13 @@ export class ChessGame {
     }
 
     this.board.initializeClock(this.timeControl);
+
+    // Add event listener for turn change
+    document.addEventListener('turnChange', (e) => {
+      if (this.mode === 'computer' && e.detail.turn === this.computer.color) {
+        this.computer.makeMove();
+      }
+    });
   }
 
 

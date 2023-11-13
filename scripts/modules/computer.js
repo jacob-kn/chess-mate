@@ -21,14 +21,10 @@ export class ChessComputer {
     // Initialize the computer player
     this.board = board;
     this.color = color;
-  }
-
-  /**
-   * Determines the "best" move for the computer player using the minimax algorithm with alpha-beta pruning.
-   */
-  makeMove() {
-    // Call the minimax algorithm with alpha-beta pruning to determine "best" move
-    // Make move by calling board.movePiece()
+    if (this.color === 'white') {
+      // If white, start the game with a move
+      this.makeMove();
+    }
   }
 
   /**
@@ -42,31 +38,90 @@ export class ChessComputer {
    * @returns {number} The heuristic value of the node.
    */
   _minimax(node, depth, alpha, beta, maximizingPlayer) {
-    // Psuedocode from https://en.wikipedia.org/wiki/Minimax
-    // if (depth == 0 || node is a terminal node) {
-    //     return the heuristic value of node
-    // }
+    // Psuedocode from https://en.wikipedia.org/wiki/Minimax#Pseudocode
+    if (depth === 0) {
+      return this._evaluateBoard(node);
+    }
 
-    // if (maximizingPlayer) {
-    //     value = -infinity
-    //     for each child of node {
-    //         value = max(value, minimax(child, depth - 1, alpha, beta, false))
-    //         alpha = max(alpha, value)
-    //         if (beta <= alpha) {
-    //             break
-    //         }
-    //     }
-    //     return value
-    // } else {
-    //     value = infinity
-    //     for each child of node {
-    //         value = min(value, minimax(child, depth - 1, alpha, beta, true))
-    //         beta = min(beta, value)
-    //         if (beta <= alpha) {
-    //             break
-    //         }
-    //     }
-    //     return value
-    // }
+    let bestValue;
+    if (maximizingPlayer) {
+      bestValue = -Infinity;
+      for (let move of node.getAllLegalMoves(this.color)) {
+        let childNode = node.clone();
+        childNode.falseMove(move.from, move.to);
+        let value = this._minimax(childNode, depth - 1, alpha, beta, false);
+        bestValue = Math.max(bestValue, value);
+        alpha = Math.max(alpha, bestValue);
+        if (beta <= alpha) {
+          break;
+        }
+      }
+    } else {
+      bestValue = Infinity;
+      for (let move of node.getAllLegalMoves(this.color === 'white' ? 'black' : 'white')) {
+        let childNode = node.clone();
+        childNode.falseMove(move.from, move.to);
+        let value = this._minimax(childNode, depth - 1, alpha, beta, true);
+        bestValue = Math.min(bestValue, value);
+        beta = Math.min(beta, bestValue);
+        if (beta <= alpha) {
+          break;
+        }
+      }
+    }
+    return bestValue;
+  }
+
+  makeMove() {
+    return new Promise((resolve) => {
+      let bestMove;
+      let bestValue = -Infinity;
+      for (let move of this.board.getAllLegalMoves(this.color)) {
+        let childNode = this.board.clone();
+        childNode.falseMove(move.from, move.to);
+        let value = this._minimax(childNode, 3, -Infinity, Infinity, false);
+        if (value > bestValue) {
+          bestValue = value;
+          bestMove = move;
+        }
+      }
+      resolve(bestMove);
+    }).then((bestMove) => {
+      this.board.animateMove(bestMove.from, bestMove.to);
+    });
+  }
+
+  /**
+   * Evaluates the current state of the board and returns a heuristic value.
+   * @private
+   * @param {Board} node - The current state of the board.
+   * @returns {number} The heuristic value of the board.
+   */
+  _evaluateBoard(node) {
+    const pieceValues = {
+      'p': 1,
+      'n': 3,
+      'b': 3,
+      'r': 5,
+      'q': 9,
+      'k': 100 // we don't want the king to be captured, so we give it a high value
+    };
+
+    let score = 0;
+
+    // loop through all squares on the board
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        const piece = node.board[i][j];
+        if (piece !== ' ') {
+          const pieceColor = piece === piece.toUpperCase() ? 'white' : 'black';
+          const value = pieceValues[piece.toLowerCase()];
+          const sign = pieceColor === this.color ? 1 : -1;
+          score += value * sign;
+        }
+      }
+    }
+
+    return score;
   }
 }

@@ -14,12 +14,12 @@ import { Modal } from "./modal.js";
  * @class
  */
 export class ChessBoard {
-  // Current player's turn. White goes first.
-  turn = 'white';
   /**
    * Creates a new instance of ChessBoard.
    */
   constructor() {
+    // Current player's turn. White goes first.
+    this.turn = 'white';
     // Players object.
     this.players = {
       white: {
@@ -68,11 +68,26 @@ export class ChessBoard {
   }
 
   /**
+   * Creates a deep clone of the current ChessBoard instance.
+   * @returns {ChessBoard} A deep clone of the current ChessBoard instance.
+   */
+  clone() {
+    const clone = new ChessBoard();
+    clone.board = JSON.parse(JSON.stringify(this.board));
+    clone.players = JSON.parse(JSON.stringify(this.players));
+    clone.turn = this.turn;
+    clone._checkInfo = JSON.parse(JSON.stringify(this._checkInfo));
+    clone._moveCounter = this._moveCounter;
+    clone._kingPosition = JSON.parse(JSON.stringify(this._kingPosition));
+    return clone;
+  }
+
+  /**
    * Gets the current turn.
    * @returns {string} The current turn.
    */
   get turn() {
-    return this.turn;
+    return this._turn;
   }
 
   /**
@@ -84,7 +99,7 @@ export class ChessBoard {
     if (!(value === 'white' || value === 'black')) {
       throw new Error("Invalid turn color");
     }
-    this.turn = value;
+    this._turn = value;
   }
 
 
@@ -123,6 +138,20 @@ export class ChessBoard {
       }
     }
     return pieces;
+  }
+
+  getAllLegalMoves(color) {
+    const pieces = this.getPiecesByColor(color);
+    const moves = [];
+
+    for (const piece of pieces) {
+      const legalMoves = this._getLegalMoves(piece.pieceType, piece.square);
+      for (const move of legalMoves) {
+        moves.push({ from: piece.square, to: move.square });
+      }
+    }
+
+    return moves;
   }
 
   /**
@@ -212,16 +241,23 @@ export class ChessBoard {
         // change position of piece to the new square
         const position = square.classList[1];
         // move the piece in the board array
-        this._movePiece(selectedPiece.classList[2], position);
+        this._movePiece(selectedPiece.classList[2], position, () => {
+          // move the piece in the DOM
+          selectedPiece.classList.remove(selectedPiece.classList[2]);
+          selectedPiece.classList.add(position);
 
-        // move the piece in the DOM
-        selectedPiece.classList.remove(selectedPiece.classList[2]);
-        selectedPiece.classList.add(position);
+          // remove highlighted squares
+          this._removeSquareEffects('movable', 'capturable', 'castle', 'selected');
 
-        // remove highlighted squares
-        this._removeSquareEffects('movable', 'capturable', 'castle', 'selected');
+          selectedPiece.addEventListener('transitionend', () => {
+            setTimeout(() => {
+              // 0 delay timeout to place dispatchEvent at the end of the event loop
+              document.dispatchEvent(new CustomEvent('turnChange', { detail: { turn: this.turn } }));
+            });
+          }, { once: true });
 
-        selectedPiece = null;
+          selectedPiece = null;
+        });
       }
 
       window.addEventListener('mousedown', boundClick, true);
@@ -293,36 +329,41 @@ export class ChessBoard {
    * @param {string} to - The destination square of the piece.
    */
   animateMove(from, to) {
-    this._movePiece(from, to);
-    // get piece element at "from" square
-    const piece = document.querySelector(`.piece.${from}`);
+    this._movePiece(from, to, () => {
+      // get piece element at "from" square
+      const piece = document.querySelector(`.piece.${from}`);
 
-    // get position of "to" square
-    const toSquare = document.createElement('div');
-    toSquare.classList.add(to);
-    this.boardElement.appendChild(toSquare);
-    const toPosition = window.getComputedStyle(toSquare).getPropertyValue('transform');
-    toSquare.remove();
-    const matrix = new DOMMatrixReadOnly(toPosition);
-    const translateX = matrix.m41;
-    const translateY = matrix.m42;
+      // get position of "to" square
+      const toSquare = document.createElement('div');
+      toSquare.classList.add(to);
+      this.boardElement.appendChild(toSquare);
+      const toPosition = window.getComputedStyle(toSquare).getPropertyValue('transform');
+      toSquare.remove();
+      const matrix = new DOMMatrixReadOnly(toPosition);
+      const translateX = matrix.m41;
+      const translateY = matrix.m42;
 
-    // animate the piece to the new square
-    piece.style.transition = 'transform 0.2s ease-in-out';
-    piece.style.transform = `translate3d(${translateX}px, ${translateY}px, 0)`;
-    setTimeout(() => {
-      piece.classList.remove(piece.classList[2]);
-      piece.classList.add(to);
-      piece.removeAttribute('style');
-    }, 200);
+      // animate the piece to the new square
+      piece.style.transition = 'transform 0.2s ease-in-out';
+      piece.style.transform = `translate3d(${translateX}px, ${translateY}px, 0)`;
+      setTimeout(() => {
+        piece.classList.remove(piece.classList[2]);
+        piece.classList.add(to);
+        piece.removeAttribute('style');
+
+        // dispatch turn change event for computer
+        document.dispatchEvent(new CustomEvent('turnChange', { detail: { turn: this.turn } }));
+      }, 200);
+    });
   }
 
   /**
    * Moves a piece from one square to another.
    * @param {string} from - The square to move from in chess notation.
    * @param {string} to - The square to move to in chess notation.
+   * @param {Function} callback - The function to call after the function.
    */
-  _movePiece(from, to) {
+  _movePiece(from, to, callback) {
     // check if the move is capturing a piece ("to" has an enemy piece). If so, call capturePiece()
     const capturedPiece = this.getPiece(to);
     if (capturedPiece !== null) {
@@ -365,7 +406,6 @@ export class ChessBoard {
     // After moving the piece, check if the move is a checkmate, stalemate, or the 50th move
     this._checkEndGame();
 
-
     this._removeSquareEffects('last-move', 'threat');
 
     // highlight the last move
@@ -376,6 +416,43 @@ export class ChessBoard {
     if (this._checkInfo.checks.length > 0) {
       this._highlightSquare(this._kingPosition[this.turn], 'threat');
     }
+
+    if (callback) {
+      callback();
+    } else {
+      document.dispatchEvent(new CustomEvent('turnChange', { detail: { turn: this.turn } }));
+    }
+  }
+
+  /**
+   * Moves a piece from one square to another.
+   * @param {string} from - The square to move from in chess notation.
+   * @param {string} to - The square to move to in chess notation.
+   */
+  falseMove(from, to) {
+    // check if the move is capturing a piece ("to" has an enemy piece). If so, call capturePiece()
+
+    // Move a piece from one square to another
+    const piece = this.getPiece(from);
+    this.setPiece(from, ' ');
+    this.setPiece(to, piece.pieceType);
+
+    // if not, check if the move is a pawn promotion
+    const endRow = this.turn === 'white' ? 8 : 1;
+    if (parseInt(to[1]) === endRow && piece.pieceType.toLowerCase() === 'p') {
+      this._promotePawn(to);
+    }
+
+    // if the piece is a king, update the king position
+    if (piece.pieceType.toLowerCase() === 'k') {
+      this._kingPosition[this.turn] = to;
+    }
+
+    // switch player turn
+    this.switchPlayer();
+
+    // get check info
+    this._checkInfo = this._getCheckInfo();
   }
 
   /**
@@ -613,6 +690,9 @@ export class ChessBoard {
         const direction = this.turn === 'white' ? 1 : -1;
         const startRow = this.turn === 'white' ? 2 : 7;
         const nextRow = parseInt(square[1]) + direction;
+        if (nextRow < 1 || nextRow > 8) {
+          break;
+        }
         const nextSquare = square[0] + nextRow; // concatenate the file and rank
         if (this.getPiece(nextSquare) === null) {
           // 1 square forward
@@ -1013,12 +1093,13 @@ export class ChessBoard {
     }
 
     // Check if any piece can block or capture the check
-    this.getPiecesByColor(this.turn).forEach((piece) => {
+    const pieces = this.getPiecesByColor(this.turn);
+    for (const piece of pieces) {
       const legalMoves = this._getLegalMoves(piece.pieceType, piece.square);
       if (legalMoves.length > 0) {
         return false;
       }
-    });
+    }
 
     // The king cannot get out of check
     return true;
