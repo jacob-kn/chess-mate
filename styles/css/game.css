@@ -939,6 +939,27 @@ div.hidden {
   padding: 10%;
 }
 
+.castle {
+  cursor: pointer;
+  z-index: 1;
+}
+.castle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: rgba(34, 51, 59, 0.3);
+  border-radius: 50%;
+  background-clip: content-box;
+  padding: 25%;
+  transition: padding 0.1s ease-out;
+}
+.castle:hover::before {
+  padding: 30%;
+}
+
 .modal {
   position: absolute;
   inset: 0 0;

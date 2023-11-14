@@ -64,6 +64,8 @@ export class ChessBoard {
     this._kingPosition = { white: 'e1', black: 'e8' }
     // Keep track of check info
     this._checkInfo = { checks: [], pins: [], blockSquares: [] };
+    // Keep track of castling rights
+    this._castlingRights = { white: { kingSide: true, queenSide: true }, black: { kingSide: true, queenSide: true } };
   }
 
   /**
@@ -78,6 +80,7 @@ export class ChessBoard {
     clone._checkInfo = JSON.parse(JSON.stringify(this._checkInfo));
     clone._moveCounter = this._moveCounter;
     clone._kingPosition = JSON.parse(JSON.stringify(this._kingPosition));
+    clone._castlingRights = JSON.parse(JSON.stringify(this._castlingRights));
     return clone;
   }
 
@@ -279,7 +282,7 @@ export class ChessBoard {
         // change position of piece to the new square
         const position = square.classList[1];
         // move the piece in the board array
-        this._movePiece(selectedPiece.classList[2], position, () => {
+        this._movePiece(selectedPiece.classList[2], position, (promise) => {
           // move the piece in the DOM
           selectedPiece.classList.remove(selectedPiece.classList[2]);
           selectedPiece.classList.add(position);
@@ -290,7 +293,14 @@ export class ChessBoard {
           selectedPiece.addEventListener('transitionend', () => {
             setTimeout(() => {
               // 0 delay timeout to place dispatchEvent at the end of the event loop
-              document.dispatchEvent(new CustomEvent('turnChange', { detail: { turn: this.turn } }));
+              if (promise) {
+                promise.then(() => {
+                  document.dispatchEvent(new CustomEvent('turnChange', { detail: { turn: this.turn } }));
+                });
+              } else {
+                document.dispatchEvent(new CustomEvent('turnChange', { detail: { turn: this.turn } }));
+              }
+
             });
           }, { once: true });
 
@@ -334,65 +344,80 @@ export class ChessBoard {
    * Captures a piece.
    * @param {string} square - The square to capture in chess notation.
    * @param {string} piece - The piece to capture.
+   * @returns {Promise<void>} A promise that resolves after the animation timeout.
    */
   _capturePiece(square, piece) {
-    // Handle piece capture
-    // Get current piece on square and update player material (_updatePlayerMaterial())
-    this._updatePlayerMaterial(piece);
+    return new Promise((resolve) => {
+      // Handle piece capture
+      // Get current piece on square and update player material (_updatePlayerMaterial())
+      this._updatePlayerMaterial(piece);
 
-    // Add animation for captured piece to shrink and move to player material
-    const color = piece.color === 'white' ? 'w' : 'b';
-    const capturedPiece = document.querySelector(`[class^=${color}].piece.${square}`);
-    const materialElement = document.querySelector(`[data-player-color=${this.turn}] > .material`);
-    const materialRect = materialElement.getBoundingClientRect();
-    const boardRect = this.boardElement.getBoundingClientRect(); // position of the board
+      // Add animation for captured piece to shrink and move to player material
+      const color = piece.color === 'white' ? 'w' : 'b';
+      const capturedPiece = document.querySelector(`[class^=${color}].piece.${square}`);
+      const materialElement = document.querySelector(`[data-player-color=${this.turn}] > .material`);
+      const materialRect = materialElement.getBoundingClientRect();
+      const boardRect = this.boardElement.getBoundingClientRect(); // position of the board
 
-    // get position of player material relative to the board
-    const relativeX = materialRect.right - boardRect.left - capturedPiece.offsetWidth / 2;
-    const relativeY = materialRect.top - boardRect.top - capturedPiece.offsetHeight / 2;
+      // get position of player material relative to the board
+      const relativeX = materialRect.right - boardRect.left - capturedPiece.offsetWidth / 2;
+      const relativeY = materialRect.top - boardRect.top - capturedPiece.offsetHeight / 2;
 
-    // animate the piece to the new square
-    capturedPiece.style.zIndex = 1;
-    capturedPiece.style.pointerEvents = 'none';
-    capturedPiece.style.transition = 'transform 0.8s ease-in-out';
-    capturedPiece.style.transform = `translate3d(${relativeX}px, ${relativeY}px, 0) scale(0.3)`;
-    setTimeout(() => {
-      // remove piece from DOM
-      capturedPiece.remove();
-    }, 800);
+      // animate the piece to the new square
+      capturedPiece.style.zIndex = 1;
+      capturedPiece.style.pointerEvents = 'none';
+      capturedPiece.style.transition = 'transform 0.8s ease-in-out';
+      capturedPiece.style.transform = `translate3d(${relativeX}px, ${relativeY}px, 0) scale(0.3)`;
+      setTimeout(() => {
+        // remove piece from DOM
+        capturedPiece.remove();
+        resolve();
+      }, 800);
+    });
   }
 
   /**
    * Animates the movement of a chess piece from one square to another.
    * @param {string} from - The starting square of the piece.
    * @param {string} to - The destination square of the piece.
+   * @param {boolean} [castle=false] - Whether the move is a castle.
+   * @returns {Promise<void>} A promise that resolves after the animation timeout.
    */
-  animateMove(from, to) {
-    this._movePiece(from, to, () => {
-      // get piece element at "from" square
-      const piece = document.querySelector(`.piece.${from}`);
+  animateMove(from, to, castle = false) {
+    return new Promise((resolve) => {
+      this._movePiece(from, to, (promise) => {
+        // get piece element at "from" square
+        const piece = document.querySelector(`.piece.${from}`);
 
-      // get position of "to" square
-      const toSquare = document.createElement('div');
-      toSquare.classList.add(to);
-      this.boardElement.appendChild(toSquare);
-      const toPosition = window.getComputedStyle(toSquare).getPropertyValue('transform');
-      toSquare.remove();
-      const matrix = new DOMMatrixReadOnly(toPosition);
-      const translateX = matrix.m41;
-      const translateY = matrix.m42;
+        // get position of "to" square
+        const toSquare = document.createElement('div');
+        toSquare.classList.add(to);
+        this.boardElement.appendChild(toSquare);
+        const toPosition = window.getComputedStyle(toSquare).getPropertyValue('transform');
+        toSquare.remove();
+        const matrix = new DOMMatrixReadOnly(toPosition);
+        const translateX = matrix.m41;
+        const translateY = matrix.m42;
 
-      // animate the piece to the new square
-      piece.style.transition = 'transform 0.2s ease-in-out';
-      piece.style.transform = `translate3d(${translateX}px, ${translateY}px, 0)`;
-      setTimeout(() => {
-        piece.classList.remove(piece.classList[2]);
-        piece.classList.add(to);
-        piece.removeAttribute('style');
+        // animate the piece to the new square
+        piece.style.transition = 'transform 0.2s ease-in-out';
+        piece.style.transform = `translate3d(${translateX}px, ${translateY}px, 0)`;
+        setTimeout(() => {
+          piece.classList.remove(piece.classList[2]);
+          piece.classList.add(to);
+          piece.removeAttribute('style');
 
-        // dispatch turn change event for computer
-        document.dispatchEvent(new CustomEvent('turnChange', { detail: { turn: this.turn } }));
-      }, 200);
+          // dispatch turn change event for computer
+          if (promise) {
+            promise.then(() => {
+              document.dispatchEvent(new CustomEvent('turnChange', { detail: { turn: this.turn } }));
+            });
+          } else {
+            document.dispatchEvent(new CustomEvent('turnChange', { detail: { turn: this.turn } }));
+          }
+          resolve();
+        }, 200);
+      }, castle);
     });
   }
 
@@ -401,12 +426,14 @@ export class ChessBoard {
    * @param {string} from - The square to move from in chess notation.
    * @param {string} to - The square to move to in chess notation.
    * @param {Function} callback - The function to call after the function.
+   * @param {boolean} [castle=false] - Whether the move is a castle.
    */
-  _movePiece(from, to, callback) {
+  _movePiece(from, to, callback, castle = false) {
     // check if the move is capturing a piece ("to" has an enemy piece). If so, call capturePiece()
     const capturedPiece = this.getPiece(to);
+    let capturePromise = null;
     if (capturedPiece !== null) {
-      this._capturePiece(to, capturedPiece);
+      capturePromise = this._capturePiece(to, capturedPiece);
     }
 
     // Move a piece from one square to another
@@ -420,11 +447,33 @@ export class ChessBoard {
       this._promotePawn(to);
     }
 
-    // if the piece is a king, update the king position
+    let animatePromise = null;
+    // if the piece is a king, update the king position and castling rights
     if (piece.pieceType.toLowerCase() === 'k') {
       this._kingPosition[this.turn] = to;
+      this._castlingRights[this.turn].kingSide = false;
+      this._castlingRights[this.turn].queenSide = false;
+
+      // if the move is a castle, move the rook
+      if (this.castlingMoves) {
+        const { kingSide, queenSide } = this.castlingMoves;
+        if (kingSide && kingSide === to) {
+          animatePromise = this.animateMove(`h${to[1]}`, `f${to[1]}`, true);
+        }
+        if (queenSide && queenSide === to) {
+          animatePromise = this.animateMove(`a${to[1]}`, `d${to[1]}`, true);
+        }
+      }
     }
 
+    // if the piece is a rook, update the castling rights
+    if (piece.pieceType.toLowerCase() === 'r') {
+      if (this._castlingRights[this.turn].queenSide && from.startsWith('a')) {
+        this._castlingRights[this.turn].queenSide = false;
+      } else if (this._castlingRights[this.turn].kingSide && from.startsWith('h')) {
+        this._castlingRights[this.turn].kingSide = false;
+      }
+    }
 
     // increment move counter if the move is not a pawn move or a capture
     if (piece.pieceType.toLowerCase() !== 'p' && capturedPiece === null) {
@@ -433,33 +482,42 @@ export class ChessBoard {
       this.moveCounter = 0;
     }
 
-    // update the clock
-    this._updateClock();
+    if (!castle) {
+      // update the clock
+      this._updateClock();
 
-    // switch player turn
-    this.switchPlayer();
+      // switch player turn
+      this.switchPlayer();
 
-    // get check info
-    this._checkInfo = this._getCheckInfo();
+      // get check info
+      this._checkInfo = this._getCheckInfo();
 
-    // After moving the piece, check if the move is a checkmate, stalemate, or the 50th move
-    this._checkEndGame();
+      // After moving the piece, check if the move is a checkmate, stalemate, or the 50th move
+      this._checkEndGame();
 
-    this._removeSquareEffects('last-move', 'threat');
+      this._removeSquareEffects('last-move', 'threat');
 
-    // highlight the last move
-    this._highlightSquare(from, 'last-move');
-    this._highlightSquare(to, 'last-move');
+      // highlight the last move
+      this._highlightSquare(from, 'last-move');
+      this._highlightSquare(to, 'last-move');
 
-    // highlight king if in check
-    if (this._checkInfo.checks.length > 0) {
-      this._highlightSquare(this._kingPosition[this.turn], 'threat');
+      // highlight king if in check
+      if (this._checkInfo.checks.length > 0) {
+        this._highlightSquare(this._kingPosition[this.turn], 'threat');
+      }
     }
 
+    const promise = capturePromise ? capturePromise : animatePromise;
     if (callback) {
-      callback();
+      callback(promise);
     } else {
-      document.dispatchEvent(new CustomEvent('turnChange', { detail: { turn: this.turn } }));
+      if (promise) {
+        promise.then(() => {
+          document.dispatchEvent(new CustomEvent('turnChange', { detail: { turn: this.turn } }));
+        });
+      } else {
+        document.dispatchEvent(new CustomEvent('turnChange', { detail: { turn: this.turn } }));
+      }
     }
   }
 
@@ -468,7 +526,7 @@ export class ChessBoard {
    * @param {string} from - The square to move from in chess notation.
    * @param {string} to - The square to move to in chess notation.
    */
-  falseMove(from, to) {
+  falseMove(from, to, castle = false) {
     // check if the move is capturing a piece ("to" has an enemy piece). If so, call capturePiece()
 
     // Move a piece from one square to another
@@ -482,9 +540,35 @@ export class ChessBoard {
       this._promotePawn(to);
     }
 
-    // if the piece is a king, update the king position
+    // if the piece is a king, update the king position and castling rights
     if (piece.pieceType.toLowerCase() === 'k') {
       this._kingPosition[this.turn] = to;
+      this._castlingRights[this.turn].kingSide = false;
+      this._castlingRights[this.turn].queenSide = false;
+
+      // if the move is a castle, move the rook
+      if (this.castlingMoves) {
+        const { kingSide, queenSide } = this.castlingMoves;
+        if (kingSide && kingSide === to) {
+          this.falseMove(`h${to[1]}`, `f${to[1]}`, true);
+        }
+        if (queenSide && queenSide === to) {
+          this.falseMove(`a${to[1]}`, `d${to[1]}`, true);
+        }
+      }
+    }
+
+    // if the piece is a rook, update the castling rights
+    if (piece.pieceType.toLowerCase() === 'r') {
+      if (this._castlingRights[this.turn].queenSide && from.startsWith('a')) {
+        this._castlingRights[this.turn].queenSide = false;
+      } else if (this._castlingRights[this.turn].kingSide && from.startsWith('h')) {
+        this._castlingRights[this.turn].kingSide = false;
+      }
+    }
+
+    if (castle) {
+      return;
     }
 
     // switch player turn
@@ -562,6 +646,10 @@ export class ChessBoard {
     }
 
     const checks = [];
+
+    // clear check info for _getLegalMoves of pawn and knight
+    const checkInfo = this._checkInfo;
+    this._checkInfo = { checks: [], pins: [], blockSquares: [] };
     this._getLegalMoves('p', kingPosition).forEach((move) => {
       if (move.type === 'capture') {
         const piece = this.getPiece(move.square);
@@ -578,6 +666,7 @@ export class ChessBoard {
         }
       }
     });
+    this._checkInfo = checkInfo;
 
     // for orthogonal and diagonal moves, check if the move is a capture and if the piece is a rook, bishop, or queen
     // if the last square is an ally piece, set a potentialPin flag and continue searching beyond for threats
@@ -889,13 +978,12 @@ export class ChessBoard {
         }
 
         // Check if the king can castle
-        if (this._isCastlingMove(square)) {
-          const kingSide = this._getNextSquare(square, 0, 2);
-          const queenSide = this._getNextSquare(square, 0, -2);
-          if (this.getPiece(kingSide) === null && this.getPiece(queenSide) === null) {
-            legalMoves.push({ square: kingSide, type: 'castle-king' });
-            legalMoves.push({ square: queenSide, type: 'castle-queen' });
-          }
+        this.castlingMoves = this._getCastlingMoves(square);
+        if (this.castlingMoves.kingSide) {
+          legalMoves.push({ square: this.castlingMoves.kingSide, type: 'castle-king' });
+        }
+        if (this.castlingMoves.queenSide) {
+          legalMoves.push({ square: this.castlingMoves.queenSide, type: 'castle-queen' });
         }
         break;
       }
@@ -1076,6 +1164,11 @@ export class ChessBoard {
     // Open promotion modal at square
     // If the player selects a piece, replace the pawn with the selected piece
     // If the player does not select a piece, replace the pawn with a queen
+    // const queen = this.turn === 'white' ? 'q' : 'Q';
+    // this.setPiece(square, queen);
+    // const queenElement = this._createPieceElement(queen, this.turn, square);
+    // const squareElement = document.querySelector(`.piece.${square}`);
+    // squareElement.replaceWith(queenElement);
   }
 
   /**
@@ -1191,18 +1284,38 @@ export class ChessBoard {
 
 
   /**
-   * Checks if the move is a castling move.
-   * @param {string} from - The starting position of the piece.
-   * @param {string} to - The ending position of the piece.
-   * @returns {boolean} - Returns true if the move is a castling move, false otherwise.
+   * Gets the castling moves of the current player.
+   * @param {string} square - The square of the king in chess notation.
    * @private
    */
-  _isCastlingMove(from, to) {
-    // Check if the move is a castling move
+  _getCastlingMoves(square) {
+    const king = this.getPiece(square);
+    const castlingMoves = { kingSide: null, queenSide: null };
 
-    // Check if the king is in check
-    // Check if the king will move through check (2 squares on either side)
-    // Check if the king or rook has moved
+    const kingSideRook = this.getPiece(`h${square[1]}`);
+    const queenSideRook = this.getPiece(`a${square[1]}`);
+
+    if (this._castlingRights[this.turn].kingSide && kingSideRook) {
+      const kingSideEmptySquares = ['f', 'g'].every(file => !this.getPiece(`${file}${square[1]}`));
+      if (kingSideEmptySquares) {
+        const kingSideNotInCheck = ['e', 'f', 'g'].every(file => !this._getCheckInfo(`${file}${square[1]}`).checks.length);
+        if (kingSideNotInCheck) {
+          castlingMoves.kingSide = `g${square[1]}`;
+        }
+      }
+    }
+
+    if (this._castlingRights[this.turn].queenSide && queenSideRook) {
+      const queenSideEmptySquares = ['b', 'c', 'd'].every(file => !this.getPiece(`${file}${square[1]}`));
+      if (queenSideEmptySquares) {
+        const queenSideNotInCheck = ['c', 'd', 'e'].every(file => !this._getCheckInfo(`${file}${square[1]}`).checks.length);
+        if (queenSideNotInCheck) {
+          castlingMoves.queenSide = `c${square[1]}`;
+        }
+      }
+    }
+
+    return castlingMoves;
   }
 
   /**

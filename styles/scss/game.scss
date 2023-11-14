@@ -406,6 +406,29 @@ $file-position: 0%;
     }
 }
 
+.castle {
+    cursor: pointer;
+    z-index: 1;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        height: 100%;
+        width: 100%;
+        box-sizing: border-box;
+        background-color: rgba(base.$surface-color, 0.3);
+        border-radius: 50%;
+        background-clip: content-box;
+        padding: 25%;
+        transition: padding 0.1s ease-out;
+    }
+
+    &:hover::before {
+        padding: 30%;
+    }
+}
+
 // MODAL
 .modal {
     position: absolute;
