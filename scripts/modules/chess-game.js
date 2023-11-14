@@ -126,15 +126,17 @@ export class ChessGame {
     // Add event listener for turn change
     document.addEventListener('turnChange', (e) => {
       const boardElement = document.getElementById('board').children;
-      if (this.mode === 'computer' && e.detail.turn === this.computer.color) {
-        for (const child of boardElement) {
-          child.style.pointerEvents = 'none';
-        };
-        this.computer.makeMove();
-      } else {
-        for (const child of boardElement) {
-          child.removeAttribute('style');
-        };
+      if (this.mode === 'computer') {
+        if (e.detail.turn === this.computer.color) {
+          for (const child of boardElement) {
+            child.style.pointerEvents = 'none';
+          };
+          this.computer.makeMove();
+        } else {
+          for (const child of boardElement) {
+            child.removeAttribute('style');
+          };
+        }
       }
     }, { signal: controller.signal });
   }
